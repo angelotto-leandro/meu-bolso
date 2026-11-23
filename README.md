@@ -51,7 +51,11 @@ No app: menu (botão **B**) → **Atalho do iPhone**. Lá tem:
 - os links e a chave para copiar;
 - o passo a passo para montar o atalho no app **Atalhos** e ligar ao **Toque Atrás**.
 
-O atalho pergunta **categoria → valor → data → forma de pagamento** e mostra uma notificação "✅ R$ 25,90 em Mercado".
+Com dois toques aparece **"Gasto ou ganho?"**:
+- **Gasto:** categoria → valor → data → forma de pagamento → "✅ R$ 25,90 em Mercado (23/11)"
+- **Ganho:** valor → data → origem (Salário, Vale, Freelancer, Presente, Outro) → "✅ Ganho de R$ 4.800,00 (Salário, 05/11)"
+
+> Instalou o banco antes da opção de ganho existir? Rode uma vez o arquivo [`supabase/atalho_ganho.sql`](supabase/atalho_ganho.sql) no SQL Editor.
 
 ---
 

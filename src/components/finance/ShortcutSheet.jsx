@@ -41,6 +41,17 @@ function Step({ n, title, children }) {
   );
 }
 
+function SectionLabel({ children, color }) {
+  const dot = color === 'rose' ? 'bg-rose-500' : color === 'emerald' ? 'bg-[#059669]' : 'bg-muted-foreground';
+  return (
+    <div className="flex items-center gap-2 pt-1">
+      <span className={cn('w-2 h-2 rounded-full', dot)} />
+      <span className="label-eyebrow text-muted-foreground">{children}</span>
+      <span className="flex-1 h-px bg-border" />
+    </div>
+  );
+}
+
 const B = ({ children }) => <strong className="text-foreground font-semibold">{children}</strong>;
 const C = ({ children }) => <code className="px-1 py-0.5 rounded bg-secondary text-foreground text-[12px]">{children}</code>;
 
@@ -68,6 +79,7 @@ export default function ShortcutSheet({ open, onOpenChange }) {
 
   const urlCategorias = `${SUPABASE_URL}/rest/v1/rpc/atalho_categorias`;
   const urlLancar = `${SUPABASE_URL}/rest/v1/rpc/atalho_lancar`;
+  const urlGanho = `${SUPABASE_URL}/rest/v1/rpc/atalho_ganho`;
   const tokenText = token || 'SEU_CÓDIGO';
 
   return (
@@ -76,7 +88,7 @@ export default function ShortcutSheet({ open, onOpenChange }) {
         <SheetHeader className="p-4 pb-3 pr-12 border-b border-border text-left space-y-1">
           <SheetTitle className="text-base font-display">Atalho do iPhone</SheetTitle>
           <SheetDescription className="text-xs">
-            Dois toques na traseira do iPhone para lançar um gasto, sem abrir o app.
+            Dois toques na traseira do iPhone para lançar um gasto ou ganho, sem abrir o app.
           </SheetDescription>
         </SheetHeader>
 
@@ -112,55 +124,102 @@ export default function ShortcutSheet({ open, onOpenChange }) {
 
           <div className="space-y-3">
             <CopyField label="Link das categorias" value={urlCategorias} />
-            <CopyField label="Link para lançar" value={urlLancar} />
+            <CopyField label="Link para lançar gasto" value={urlLancar} />
+            <CopyField label="Link para lançar ganho" value={urlGanho} />
             <CopyField label="Chave (cabeçalho apikey)" value={SUPABASE_KEY} />
           </div>
 
           {/* Passo a passo */}
-          <div>
-            <p className="font-display font-semibold text-sm text-foreground mb-3">Montar o Atalho (uma vez só)</p>
+          <div className="space-y-5">
+            <div>
+              <p className="font-display font-semibold text-sm text-foreground">Montar o Atalho (uma vez só)</p>
+              <p className="text-[12px] text-muted-foreground mt-1">
+                Com dois toques aparece “Gasto ou Ganho?”. Use a busca de ações do app Atalhos para achar cada ação abaixo.
+              </p>
+            </div>
+
             <ol className="space-y-4">
-              <Step n={1} title="Abra o app Atalhos e crie um atalho novo">
-                <p>Toque em <B>+</B> e dê o nome <B>Lançar gasto</B>. Adicione as ações abaixo, nesta ordem (use a busca de ações).</p>
+              <Step n={1} title="Crie o atalho">
+                <p>Abra o app <B>Atalhos</B>, toque em <B>+</B> e dê o nome <B>Lançar</B>.</p>
               </Step>
-              <Step n={2} title="Obter Conteúdo de URL (busca suas categorias)">
+              <Step n={2} title="Escolher do Menu">
+                <p>Pergunta: <C>Gasto ou ganho?</C>. Deixe duas opções: <C>Gasto</C> e <C>Ganho</C>.</p>
+                <p>O Atalhos cria um bloco para cada opção. As ações dos passos 3 a 10 vão <B>dentro do bloco Gasto</B>; as dos passos 11 a 16, <B>dentro do bloco Ganho</B>. Se uma ação cair fora do lugar, segure e arraste.</p>
+              </Step>
+            </ol>
+
+            <SectionLabel color="rose">Dentro de “Gasto”</SectionLabel>
+            <ol className="space-y-4">
+              <Step n={3} title="Obter Conteúdo de URL (suas categorias)">
                 <p>URL: o <B>Link das categorias</B>.</p>
-                <p>Toque na setinha e ajuste: Método <B>POST</B>. Em <B>Cabeçalhos</B>, adicione <C>apikey</C> com a <B>Chave</B>.</p>
-                <p>Corpo da Solicitação: <B>JSON</B>. Adicione o campo <C>token</C> (Texto) com o seu <B>código</B>.</p>
+                <p>Toque na setinha: Método <B>POST</B>. Em <B>Cabeçalhos</B>, adicione <C>apikey</C> com a <B>Chave</B>.</p>
+                <p>Corpo da Solicitação: <B>JSON</B>, com o campo <C>token</C> (Texto) = seu <B>código</B>.</p>
               </Step>
-              <Step n={3} title="Escolher da Lista">
+              <Step n={4} title="Escolher da Lista">
                 <p>Lista: <B>Conteúdos da URL</B>. Em “Mostrar mais”, Pergunta: <C>Categoria</C>.</p>
               </Step>
-              <Step n={4} title="Pedir Entrada (valor)">
+              <Step n={5} title="Pedir Entrada (valor)">
                 <p>Tipo: <B>Número</B>. Pergunta: <C>Valor do gasto</C>. Ative <B>Permitir Decimais</B>.</p>
               </Step>
-              <Step n={5} title="Pedir Entrada (data)">
+              <Step n={6} title="Pedir Entrada (data)">
                 <p>Tipo: <B>Data</B>. Pergunta: <C>Data</C>. Resposta Padrão: <B>Data Atual</B>.</p>
               </Step>
-              <Step n={6} title="Formatar Data">
-                <p>Data: a <B>Entrada Fornecida</B> do passo 5. Formato da Data: <B>Personalizado</B>, com o texto <C>yyyy-MM-dd</C>. Formato da Hora: <B>Nenhum</B>.</p>
+              <Step n={7} title="Formatar Data">
+                <p>Data: a <B>Entrada Fornecida</B> do passo 6. Formato da Data: <B>Personalizado</B> → <C>yyyy-MM-dd</C>. Formato da Hora: <B>Nenhum</B>.</p>
               </Step>
-              <Step n={7} title="Lista + Escolher da Lista (pagamento)">
-                <p>Ação <B>Lista</B> com os itens: <C>Débito</C> <C>Crédito</C> <C>Pix</C> <C>Dinheiro</C>.</p>
-                <p>Depois <B>Escolher da Lista</B> com essa lista. Pergunta: <C>Forma de pagamento</C>.</p>
+              <Step n={8} title="Lista + Escolher da Lista (pagamento)">
+                <p><B>Lista</B> com: <C>Débito</C> <C>Crédito</C> <C>Pix</C> <C>Dinheiro</C>. Depois <B>Escolher da Lista</B>, Pergunta: <C>Forma de pagamento</C>.</p>
               </Step>
-              <Step n={8} title="Obter Conteúdo de URL (lança o gasto)">
-                <p>URL: o <B>Link para lançar</B>. Método <B>POST</B>, cabeçalho <C>apikey</C> com a <B>Chave</B>, como no passo 2.</p>
-                <p>Corpo: <B>JSON</B>, com estes campos do tipo Texto:</p>
+              <Step n={9} title="Obter Conteúdo de URL (lança o gasto)">
+                <p>URL: <B>Link para lançar gasto</B>. Método <B>POST</B>, cabeçalho <C>apikey</C> com a <B>Chave</B>.</p>
+                <p>Corpo <B>JSON</B>, campos do tipo Texto:</p>
                 <ul className="list-disc pl-5 space-y-0.5">
                   <li><C>token</C> → seu código</li>
-                  <li><C>valor</C> → Entrada Fornecida (passo 4)</li>
-                  <li><C>data</C> → Data Formatada (passo 6)</li>
-                  <li><C>categoria</C> → Item Escolhido (passo 3)</li>
-                  <li><C>pagamento</C> → Item Escolhido (passo 7)</li>
+                  <li><C>valor</C> → Entrada Fornecida (passo 5)</li>
+                  <li><C>data</C> → Data Formatada (passo 7)</li>
+                  <li><C>categoria</C> → Item Escolhido (passo 4)</li>
+                  <li><C>pagamento</C> → Item Escolhido (passo 8)</li>
                 </ul>
-                <p>Para pôr uma variável, toque no campo e escolha na barra acima do teclado (ou em “Selecionar Variável”).</p>
               </Step>
-              <Step n={9} title="Mostrar Notificação">
-                <p>Texto: <B>Conteúdos da URL</B> (do passo 8). Ela mostra “✅ R$ 25,90 em Mercado” ou o erro, se algo der errado.</p>
+              <Step n={10} title="Mostrar Notificação">
+                <p>Texto: <B>Conteúdos da URL</B> do passo 9.</p>
               </Step>
-              <Step n={10} title="Ligar ao Toque Atrás">
-                <p>Ajustes → Acessibilidade → Toque → <B>Toque Atrás</B> → <B>Toque Duplo</B> → escolha <B>Lançar gasto</B>.</p>
+            </ol>
+
+            <SectionLabel color="emerald">Dentro de “Ganho”</SectionLabel>
+            <ol className="space-y-4">
+              <Step n={11} title="Pedir Entrada (valor)">
+                <p>Tipo: <B>Número</B>. Pergunta: <C>Valor do ganho</C>. Ative <B>Permitir Decimais</B>.</p>
+              </Step>
+              <Step n={12} title="Pedir Entrada (data)">
+                <p>Tipo: <B>Data</B>. Pergunta: <C>Data</C>. Resposta Padrão: <B>Data Atual</B>.</p>
+                <p className="text-[12px]">Dica: segure as ações 6 e 7 do bloco Gasto → <B>Duplicar</B> e arraste as cópias para cá.</p>
+              </Step>
+              <Step n={13} title="Formatar Data">
+                <p>Data: a <B>Entrada Fornecida</B> do passo 12. Personalizado → <C>yyyy-MM-dd</C>. Hora: <B>Nenhum</B>.</p>
+              </Step>
+              <Step n={14} title="Lista + Escolher da Lista (origem)">
+                <p><B>Lista</B> com: <C>Salário</C> <C>Vale</C> <C>Freelancer</C> <C>Presente</C> <C>Outro</C>. Depois <B>Escolher da Lista</B>, Pergunta: <C>Origem</C>.</p>
+              </Step>
+              <Step n={15} title="Obter Conteúdo de URL (lança o ganho)">
+                <p>URL: <B>Link para lançar ganho</B>. Método <B>POST</B>, cabeçalho <C>apikey</C> com a <B>Chave</B>.</p>
+                <p>Corpo <B>JSON</B>, campos do tipo Texto:</p>
+                <ul className="list-disc pl-5 space-y-0.5">
+                  <li><C>token</C> → seu código</li>
+                  <li><C>valor</C> → Entrada Fornecida (passo 11)</li>
+                  <li><C>data</C> → Data Formatada (passo 13)</li>
+                  <li><C>origem</C> → Item Escolhido (passo 14)</li>
+                </ul>
+              </Step>
+              <Step n={16} title="Mostrar Notificação">
+                <p>Texto: <B>Conteúdos da URL</B> do passo 15.</p>
+              </Step>
+            </ol>
+
+            <SectionLabel>Por fim</SectionLabel>
+            <ol className="space-y-4">
+              <Step n={17} title="Ligar ao Toque Atrás">
+                <p>Ajustes → Acessibilidade → Toque → <B>Toque Atrás</B> → <B>Toque Duplo</B> → escolha <B>Lançar</B>.</p>
               </Step>
             </ol>
           </div>
@@ -168,18 +227,26 @@ export default function ShortcutSheet({ open, onOpenChange }) {
           <div className="rounded-xl border border-border p-3 text-[12px] text-muted-foreground space-y-1.5">
             <p className="font-semibold text-foreground text-[13px]">Dicas</p>
             <p>• Teste primeiro tocando no atalho dentro do app Atalhos. Na primeira vez o iPhone pede permissão para acessar o site do Supabase: toque em <B>Permitir</B>.</p>
-            <p>• Para a família: depois de pronto, você pode compartilhar o atalho por link do iCloud. Cada pessoa troca o <C>token</C> pelo código dela (nos passos 2 e 8).</p>
+            <p>• Para pôr uma variável num campo, toque no campo e escolha na barra acima do teclado (ou em “Selecionar Variável”).</p>
+            <p>• Já montou o atalho antigo, só de gastos? Adicione o <B>Escolher do Menu</B> no topo e arraste as ações que já existem para dentro do bloco <B>Gasto</B>.</p>
+            <p>• Para a família: compartilhe o atalho pronto por link do iCloud. Cada pessoa troca o <C>token</C> pelo código dela (passos 3, 9 e 15).</p>
             <p>• O gasto aparece no app na hora em que você abrir ou voltar para ele.</p>
           </div>
 
           <details className="text-[12px] text-muted-foreground">
-            <summary className="cursor-pointer font-semibold text-foreground text-[13px]">Exemplo do corpo JSON (para conferir)</summary>
+            <summary className="cursor-pointer font-semibold text-foreground text-[13px]">Exemplos do corpo JSON (para conferir)</summary>
             <pre className="mt-2 rounded-lg bg-secondary/60 p-3 overflow-x-auto text-[11px] text-foreground">{`{
   "token": "${tokenText}",
   "valor": "25,90",
   "data": "2026-11-23",
   "categoria": "Mercado",
   "pagamento": "Pix"
+}`}</pre>
+            <pre className="mt-2 rounded-lg bg-secondary/60 p-3 overflow-x-auto text-[11px] text-foreground">{`{
+  "token": "${tokenText}",
+  "valor": "4800",
+  "data": "2026-11-05",
+  "origem": "Salário"
 }`}</pre>
           </details>
         </div>

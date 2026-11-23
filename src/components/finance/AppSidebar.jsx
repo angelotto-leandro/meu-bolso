@@ -77,7 +77,7 @@ export default function AppSidebar({ open, onOpenChange, dailyExpenses, fixedExp
               <span className="w-9 h-9 rounded-lg bg-[#059669] text-white grid place-items-center shrink-0"><Smartphone className="w-4 h-4" /></span>
               <span className="min-w-0 flex-1">
                 <span className="block text-sm font-semibold text-foreground">Atalho do iPhone</span>
-                <span className="block text-[11px] text-muted-foreground">Lançar com dois toques atrás</span>
+                <span className="block text-[11px] text-muted-foreground">Gasto ou ganho com dois toques</span>
               </span>
               <ChevronRight className="w-4 h-4 text-muted-foreground" />
             </button>
