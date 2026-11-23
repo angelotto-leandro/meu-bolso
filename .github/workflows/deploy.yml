@@ -27,10 +27,8 @@ jobs:
       - run: npm ci
       - run: npm run build
         env:
+          # As chaves públicas do Supabase ficam no arquivo .env.production
           BASE_PATH: /${{ github.event.repository.name }}/
-          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
-          VITE_GOOGLE_LOGIN: ${{ vars.VITE_GOOGLE_LOGIN }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

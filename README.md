@@ -29,9 +29,7 @@ Em **Project Settings → API Keys** (ou **Data API**), copie:
 
 1. Crie um repositório no GitHub chamado `meu-bolso` e envie este código para ele.
 2. No repositório: **Settings → Pages → Source: GitHub Actions**.
-3. Em **Settings → Secrets and variables → Actions → aba Variables**, crie:
-   - `VITE_SUPABASE_URL` = a Project URL
-   - `VITE_SUPABASE_ANON_KEY` = a chave publishable/anon
+3. Coloque a Project URL e a chave publishable/anon no arquivo [`.env.production`](.env.production) (já preenchido neste projeto).
 4. Em **Actions**, rode o workflow **Publicar app** (ou faça qualquer push na `main`).
 5. Em 1 ou 2 minutos o app fica em `https://SEU-USUARIO.github.io/meu-bolso/`.
 
@@ -61,7 +59,7 @@ O atalho pergunta **categoria → valor → data → forma de pagamento** e most
 
 ### Login com Google (opcional)
 1. Configure o Google em **Supabase → Authentication → Sign In / Providers → Google** (o Supabase mostra o passo a passo do Google Cloud).
-2. No GitHub, crie a variável `VITE_GOOGLE_LOGIN` = `true` e publique de novo.
+2. No arquivo `.env.production`, troque `VITE_GOOGLE_LOGIN=false` por `true` e publique de novo.
 
 ### Tornar outra pessoa admin
 No **SQL Editor** do Supabase:
