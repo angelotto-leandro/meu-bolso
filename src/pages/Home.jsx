@@ -7,6 +7,7 @@ import { getPeriod, periodDays, currentPeriodMonth } from '@/lib/billing';
 import InvoiceStatus from '@/components/finance/InvoiceStatus';
 import InvoiceCloseDialog from '@/components/finance/InvoiceCloseDialog';
 import EditEntrySheet from '@/components/finance/EditEntrySheet';
+import SearchSheet from '@/components/finance/SearchSheet';
 import PaidToggle from '@/components/finance/PaidToggle';
 import { fixedStatus, fixedTotals } from '@/lib/fixed';
 import { supabase, unwrap } from '@/lib/supabase';
@@ -22,7 +23,7 @@ import ConfirmDelete from '@/components/finance/ConfirmDelete';
 import { useCategories } from '@/hooks/useCategories';
 import { PaymentBadge, InstallmentTag } from '@/components/finance/PaymentBadge';
 import { sourceMeta } from '@/components/finance/IncomeManager';
-import { Plus, ChevronLeft, ChevronRight, TrendingUp, TrendingDown, CalendarDays, Repeat, Banknote, X } from 'lucide-react';
+import { Plus, ChevronLeft, ChevronRight, TrendingUp, TrendingDown, CalendarDays, Repeat, Banknote, X, Search } from 'lucide-react';
 
 export default function Home() {
   const billing = useBilling();
@@ -43,6 +44,8 @@ export default function Home() {
   const isMobile = useIsMobile();
   const { dailyExpenses, fixedExpenses, incomes, paidMap, togglePaid, loading, error, reload } = useFinanceData(period, monthDate);
   const [editing, setEditing] = useState(null); // { kind: 'expense' | 'income', row }
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
   const { categories, reloadCategories } = useCategories();
   const [menuOpen, setMenuOpen] = useState(false);
   const [statement, setStatement] = useState(null);
@@ -130,7 +133,24 @@ export default function Home() {
         togglePaid={togglePaid}
         onEdit={setEditing}
       />
-      <EditEntrySheet entry={editing} onOpenChange={(o) => !o && setEditing(null)} customCategories={categories} onSaved={reload} />
+      <EditEntrySheet
+        entry={editing}
+        onOpenChange={(o) => !o && setEditing(null)}
+        customCategories={categories}
+        onSaved={() => {
+          reload();
+          setRefreshKey((k) => k + 1);
+        }}
+      />
+      <SearchSheet
+        open={searchOpen}
+        onOpenChange={setSearchOpen}
+        monthDate={monthDate}
+        billing={billing}
+        customCategories={categories}
+        onEdit={setEditing}
+        refreshKey={refreshKey}
+      />
       <InvoiceCloseDialog open={closeOpen} onOpenChange={setCloseOpen} monthDate={monthDate} billing={billing} />
     </>
   );
@@ -161,6 +181,7 @@ export default function Home() {
           onNew={() => setMobileOpen(true)}
           onOpenMenu={() => setMenuOpen(true)}
           onOpenStatement={setStatement}
+          onSearch={() => setSearchOpen(true)}
         />
         <MobileEntrySheet open={mobileOpen} onOpenChange={setMobileOpen} {...entryProps} />
         {shared}
@@ -177,6 +198,7 @@ export default function Home() {
           onCloseInvoice={() => setCloseOpen(true)}
           onOpenMenu={() => setMenuOpen(true)}
           onOpenStatement={setStatement}
+          onSearch={() => setSearchOpen(true)}
           onPrev={() => changeMonth(-1)}
           onNext={() => changeMonth(1)}
           receitas={receitas}
@@ -205,7 +227,7 @@ function MobileHome(props) {
     period, onCloseInvoice, onPrev, onNext,
     receitas, despesasFixas, gastosDiarios, saldo,
     dailyExpenses, fixedExpenses, incomes,
-    selectedDate, onSelectDate, onDelete, onEdit, monthDate, paidMap, togglePaid, onNew, onOpenMenu, onOpenStatement,
+    selectedDate, onSelectDate, onDelete, onEdit, monthDate, paidMap, togglePaid, onNew, onOpenMenu, onOpenStatement, onSearch,
   } = props;
 
   const totalExpense = despesasFixas + gastosDiarios;
@@ -246,10 +268,15 @@ function MobileHome(props) {
               <p className="font-display font-bold text-sm text-foreground leading-none">Controle de Gastos</p>
             </div>
           </div>
+          <div className="flex items-center gap-1.5">
+          <button onClick={onSearch} aria-label="Buscar gastos" className="w-9 h-9 rounded-full border border-border bg-card grid place-items-center text-muted-foreground active:scale-95 transition-transform">
+            <Search className="w-4 h-4" />
+          </button>
           <div className="inline-flex items-center gap-1 rounded-full border border-border bg-card p-0.5">
             <button onClick={onPrev} aria-label="Período anterior" className="p-1.5 rounded-full text-muted-foreground"><ChevronLeft className="w-4 h-4" /></button>
-            <span className="px-2 text-xs font-semibold text-center min-w-[110px] text-foreground">{period.shortLabel}</span>
+            <span className="px-1 text-xs font-semibold text-center min-w-[92px] text-foreground leading-tight">{period.shortLabel}</span>
             <button onClick={onNext} aria-label="Próximo período" className="p-1.5 rounded-full text-muted-foreground"><ChevronRight className="w-4 h-4" /></button>
+          </div>
           </div>
         </div>
 

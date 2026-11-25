@@ -1,10 +1,10 @@
 import React from 'react';
-import { ChevronLeft, ChevronRight, Wallet, TrendingUp, TrendingDown, PiggyBank } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Wallet, TrendingUp, TrendingDown, PiggyBank, Search } from 'lucide-react';
 import { formatBRL } from '@/lib/format';
 import InvoiceStatus from '@/components/finance/InvoiceStatus';
 import { cn } from '@/lib/utils';
 
-export default function SummaryHeader({ period, onCloseInvoice, onOpenMenu, onOpenStatement, onPrev, onNext, receitas, despesasFixas, gastosDiarios, saldo, fixedOpen }) {
+export default function SummaryHeader({ period, onCloseInvoice, onOpenMenu, onOpenStatement, onSearch, onPrev, onNext, receitas, despesasFixas, gastosDiarios, saldo, fixedOpen }) {
   const saldoPositive = saldo >= 0;
   const cards = [
     { label: 'Receitas', value: receitas, icon: TrendingUp, tone: 'emerald', statement: 'receitas' },
@@ -22,10 +22,15 @@ export default function SummaryHeader({ period, onCloseInvoice, onOpenMenu, onOp
             <h1 className="font-display font-bold text-lg text-foreground leading-tight">Controle de Gastos</h1>
           </div>
         </div>
+        <div className="flex items-center gap-2">
+        <button onClick={onSearch} className="h-10 inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 text-sm text-muted-foreground shadow-sm hover:text-foreground transition-colors">
+          <Search className="w-4 h-4" /> Buscar
+        </button>
         <div className="inline-flex items-center gap-1 rounded-full border border-border bg-card p-1 shadow-sm">
           <button onClick={onPrev} aria-label="Período anterior" className="p-1.5 rounded-full hover:bg-secondary text-muted-foreground transition-colors"><ChevronLeft className="w-4 h-4" /></button>
           <span className="px-3 text-sm font-semibold min-w-[150px] text-center text-foreground">{period.label}</span>
           <button onClick={onNext} aria-label="Próximo período" className="p-1.5 rounded-full hover:bg-secondary text-muted-foreground transition-colors"><ChevronRight className="w-4 h-4" /></button>
+        </div>
         </div>
       </div>
       <InvoiceStatus period={period} onClose={onCloseInvoice} className="justify-end -mt-2" />
