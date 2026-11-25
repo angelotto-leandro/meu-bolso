@@ -9,6 +9,7 @@ export function useFinanceData(period, monthDate) {
   const [dailyExpenses, setDailyExpenses] = useState([]);
   const [fixedExpenses, setFixedExpenses] = useState([]);
   const [incomes, setIncomes] = useState([]);
+  const [paidMap, setPaidMap] = useState({}); // { fixed_id: 'AAAA-MM-DD' pago em }
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -30,6 +31,9 @@ export function useFinanceData(period, monthDate) {
       setFixedExpenses(f);
       setIncomes(i);
       setError(null);
+      // Gastos fixos pagos neste período (se o banco ainda não tiver a tabela, segue sem).
+      const { data: pays } = await supabase.from('fixed_payments').select('fixed_id, paid_on').eq('user_id', user.id).eq('period', mStart);
+      setPaidMap(Object.fromEntries((pays || []).map((p) => [p.fixed_id, p.paid_on])));
     } catch (e) {
       setError(e.message || 'Erro ao carregar os dados');
     } finally {
@@ -48,5 +52,22 @@ export function useFinanceData(period, monthDate) {
     return () => document.removeEventListener('visibilitychange', onVisible);
   }, [load]);
 
-  return { dailyExpenses, fixedExpenses, incomes, loading, error, reload: load };
+  // Marca/desmarca um gasto fixo como pago neste período.
+  const togglePaid = async (fixedId) => {
+    if (paidMap[fixedId]) {
+      await unwrap(supabase.from('fixed_payments').delete().eq('fixed_id', fixedId).eq('period', mStart));
+      setPaidMap((m) => {
+        const n = { ...m };
+        delete n[fixedId];
+        return n;
+      });
+    } else {
+      const paidOn = new Date();
+      const iso = `${paidOn.getFullYear()}-${String(paidOn.getMonth() + 1).padStart(2, '0')}-${String(paidOn.getDate()).padStart(2, '0')}`;
+      await unwrap(supabase.from('fixed_payments').insert({ user_id: user.id, fixed_id: fixedId, period: mStart, paid_on: iso }));
+      setPaidMap((m) => ({ ...m, [fixedId]: iso }));
+    }
+  };
+
+  return { dailyExpenses, fixedExpenses, incomes, paidMap, togglePaid, loading, error, reload: load };
 }

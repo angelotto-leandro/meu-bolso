@@ -11,6 +11,8 @@ import { formatBRL, parseAmount, monthStart, monthLabel, monthOfLabel } from '@/
 import { allCategoryNames } from '@/lib/categories';
 import { cn } from '@/lib/utils';
 import { Trash2, Plus, Loader2 } from 'lucide-react';
+import PaidToggle from '@/components/finance/PaidToggle';
+import { fixedStatus, fixedTotals } from '@/lib/fixed';
 
 export function fixedPeriodLabel(e) {
   if (e.end_month) return `${monthOfLabel(e.start_month)} até ${monthOfLabel(e.end_month)}`;
@@ -75,7 +77,7 @@ function RemoveFixedDialog({ expense, monthDate, periodLabel, onDone }) {
   );
 }
 
-export default function FixedExpenseManager({ fixedExpenses, onSaved, monthDate, periodLabel, customCategories = [] }) {
+export default function FixedExpenseManager({ fixedExpenses, onSaved, monthDate, periodLabel, paidMap = {}, togglePaid, customCategories = [] }) {
   const allCategories = allCategoryNames(customCategories);
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
@@ -123,16 +125,19 @@ export default function FixedExpenseManager({ fixedExpenses, onSaved, monthDate,
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <h4 className="font-display font-semibold text-foreground text-sm">Gastos Fixos</h4>
-        <span className="tnum text-xs text-muted-foreground">{formatBRL(total)}</span>
+        <span className="tnum text-xs text-muted-foreground">{fixedExpenses.length ? fixedTotals(fixedExpenses, paidMap).label : formatBRL(total)}</span>
       </div>
       <div className="space-y-1">
         {fixedExpenses.length === 0 && <p className="text-xs text-muted-foreground py-1">Nenhum gasto fixo neste período.</p>}
-        {fixedExpenses.map((e) => (
+        {fixedExpenses.map((e) => {
+          const st = fixedStatus(e, monthDate, paidMap[e.id]);
+          return (
           <div key={e.id} className="flex items-center justify-between gap-2 py-1.5 border-b border-border last:border-0">
-            <div className="min-w-0">
+            {togglePaid && <PaidToggle paid={!!paidMap[e.id]} late={st.tone === 'late'} name={e.name} onToggle={() => togglePaid(e.id)} size="sm" />}
+            <div className="min-w-0 flex-1">
               <p className="text-sm font-medium text-foreground truncate">{e.name}</p>
               <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                <span className="text-xs text-muted-foreground">Dia {e.due_day}</span>
+                <span className={cn('text-xs', st.tone === 'late' ? 'text-expense font-medium' : st.tone === 'paid' ? 'text-brand' : 'text-muted-foreground')}>{st.text}</span>
                 <PaymentBadge method={e.payment_method} />
                 {e.category && <span className="text-[11px] text-muted-foreground">{e.category}</span>}
               </div>
@@ -143,7 +148,8 @@ export default function FixedExpenseManager({ fixedExpenses, onSaved, monthDate,
               <RemoveFixedDialog expense={e} monthDate={monthDate} periodLabel={periodLabel} onDone={onSaved} />
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
       <form onSubmit={submit} className="space-y-2 rounded-lg border border-border p-3 bg-secondary/40">
         <Input placeholder="Nome (ex: Aluguel)" value={name} onChange={(e) => setName(e.target.value)} className="h-9" />

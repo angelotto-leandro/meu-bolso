@@ -6,6 +6,9 @@ import { useBilling } from '@/hooks/useBilling';
 import { getPeriod, periodDays, currentPeriodMonth } from '@/lib/billing';
 import InvoiceStatus from '@/components/finance/InvoiceStatus';
 import InvoiceCloseDialog from '@/components/finance/InvoiceCloseDialog';
+import EditEntrySheet from '@/components/finance/EditEntrySheet';
+import PaidToggle from '@/components/finance/PaidToggle';
+import { fixedStatus, fixedTotals } from '@/lib/fixed';
 import { supabase, unwrap } from '@/lib/supabase';
 import { cn } from '@/lib/utils';
 import SummaryHeader from '@/components/finance/SummaryHeader';
@@ -17,7 +20,7 @@ import AppSidebar from '@/components/finance/AppSidebar';
 import StatementSheet from '@/components/finance/StatementSheet';
 import ConfirmDelete from '@/components/finance/ConfirmDelete';
 import { useCategories } from '@/hooks/useCategories';
-import { PaymentBadge } from '@/components/finance/PaymentBadge';
+import { PaymentBadge, InstallmentTag } from '@/components/finance/PaymentBadge';
 import { sourceMeta } from '@/components/finance/IncomeManager';
 import { Plus, ChevronLeft, ChevronRight, TrendingUp, TrendingDown, CalendarDays, Repeat, Banknote, X } from 'lucide-react';
 
@@ -38,7 +41,8 @@ export default function Home() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const isMobile = useIsMobile();
-  const { dailyExpenses, fixedExpenses, incomes, loading, error, reload } = useFinanceData(period, monthDate);
+  const { dailyExpenses, fixedExpenses, incomes, paidMap, togglePaid, loading, error, reload } = useFinanceData(period, monthDate);
+  const [editing, setEditing] = useState(null); // { kind: 'expense' | 'income', row }
   const { categories, reloadCategories } = useCategories();
   const [menuOpen, setMenuOpen] = useState(false);
   const [statement, setStatement] = useState(null);
@@ -94,6 +98,9 @@ export default function Home() {
     fixedExpenses,
     incomes,
     customCategories: categories,
+    paidMap,
+    togglePaid,
+    onEdit: setEditing,
   };
 
   const shared = (
@@ -114,10 +121,15 @@ export default function Home() {
         onOpenChange={(o) => !o && setStatement(null)}
         type={statement}
         period={period}
+        monthDate={monthDate}
         dailyExpenses={dailyExpenses}
         fixedExpenses={fixedExpenses}
         incomes={incomes}
+        paidMap={paidMap}
+        togglePaid={togglePaid}
+        onEdit={setEditing}
       />
+      <EditEntrySheet entry={editing} onOpenChange={(o) => !o && setEditing(null)} customCategories={categories} onSaved={reload} />
       <InvoiceCloseDialog open={closeOpen} onOpenChange={setCloseOpen} monthDate={monthDate} billing={billing} />
     </>
   );
@@ -141,6 +153,10 @@ export default function Home() {
           selectedDate={selectedDate}
           onSelectDate={setSelectedDate}
           onDelete={deleteExpense}
+          onEdit={setEditing}
+          monthDate={monthDate}
+          paidMap={paidMap}
+          togglePaid={togglePaid}
           onNew={() => setMobileOpen(true)}
           onOpenMenu={() => setMenuOpen(true)}
           onOpenStatement={setStatement}
@@ -166,11 +182,12 @@ export default function Home() {
           despesasFixas={despesasFixas}
           gastosDiarios={gastosDiarios}
           saldo={saldo}
+          fixedOpen={fixedTotals(fixedExpenses, paidMap).open}
         />
         <div className="grid grid-cols-1 lg:grid-cols-[65fr_35fr] gap-6 items-start">
           <div className="space-y-4 lg:min-w-0">
             <CalendarMatrix days={periodDays(period)} dailyExpenses={dailyExpenses} selectedDate={selectedDate} onSelectDate={setSelectedDate} />
-            <TransactionStream dailyExpenses={dailyExpenses} selectedDate={selectedDate} onClearFilter={() => setSelectedDate(null)} onDelete={deleteExpense} />
+            <TransactionStream dailyExpenses={dailyExpenses} selectedDate={selectedDate} onClearFilter={() => setSelectedDate(null)} onDelete={deleteExpense} onEdit={(e) => setEditing({ kind: 'expense', row: e })} />
           </div>
           <div>
             <QuickEntryPanel {...entryProps} />
@@ -187,7 +204,7 @@ function MobileHome(props) {
     period, onCloseInvoice, onPrev, onNext,
     receitas, despesasFixas, gastosDiarios, saldo,
     dailyExpenses, fixedExpenses, incomes,
-    selectedDate, onSelectDate, onDelete, onNew, onOpenMenu, onOpenStatement,
+    selectedDate, onSelectDate, onDelete, onEdit, monthDate, paidMap, togglePaid, onNew, onOpenMenu, onOpenStatement,
   } = props;
 
   const totalExpense = despesasFixas + gastosDiarios;
@@ -308,21 +325,32 @@ function MobileHome(props) {
         <div className="flex items-center gap-1.5 mb-2 text-muted-foreground">
           <Repeat className="w-3.5 h-3.5" />
           <span className="label-eyebrow">Gastos fixos</span>
+          {fixedExpenses.length > 0 && (
+            <span className="ml-auto text-[11px] tnum">
+              <span className="text-brand">Pago {formatBRL(fixedTotals(fixedExpenses, paidMap).paid)}</span>
+              <span className="text-muted-foreground"> · falta {formatBRL(fixedTotals(fixedExpenses, paidMap).open)}</span>
+            </span>
+          )}
         </div>
         {fixedExpenses.length === 0 ? (
           <p className="text-xs text-muted-foreground py-2">Nenhum gasto fixo. Toque em “Lançamentos”.</p>
         ) : (
           <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 scrollbar-none">
-            {fixedExpenses.map((e) => (
-              <div key={e.id} className="shrink-0 w-44 rounded-xl border border-border bg-card p-3">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs text-muted-foreground">Dia {e.due_day}</span>
-                  <PaymentBadge method={e.payment_method} />
+            {fixedExpenses.map((e) => {
+              const paid = !!paidMap[e.id];
+              const st = fixedStatus(e, monthDate, paidMap[e.id]);
+              return (
+                <div key={e.id} className={cn('shrink-0 w-44 rounded-xl border bg-card p-3', st.tone === 'late' ? 'border-expense-border' : 'border-border')}>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <PaidToggle paid={paid} late={st.tone === 'late'} name={e.name} onToggle={() => togglePaid(e.id)} />
+                    <PaymentBadge method={e.payment_method} />
+                  </div>
+                  <p className="text-sm font-medium text-foreground truncate">{e.name}</p>
+                  <p className={cn('tnum font-display font-bold mt-0.5', paid ? 'text-muted-foreground line-through' : 'text-foreground')}>{formatBRL(e.amount)}</p>
+                  <p className={cn('text-[11px] mt-0.5 truncate', st.tone === 'late' ? 'text-expense font-medium' : st.tone === 'paid' ? 'text-brand' : 'text-muted-foreground')}>{st.text}</p>
                 </div>
-                <p className="text-sm font-medium text-foreground truncate">{e.name}</p>
-                <p className="tnum font-display font-bold text-foreground mt-1">{formatBRL(e.amount)}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
@@ -340,7 +368,7 @@ function MobileHome(props) {
             {incomes.map((e) => {
               const src = sourceMeta(e.source);
               return (
-                <div key={e.id} className="flex items-center justify-between gap-2 rounded-xl border border-border bg-card p-3">
+                <div key={e.id} onClick={() => onEdit({ kind: 'income', row: e })} className="flex items-center justify-between gap-2 rounded-xl border border-border bg-card p-3 active:bg-secondary/60 cursor-pointer">
                   <div className="flex items-center gap-2 min-w-0">
                     <span className={cn('px-2 py-0.5 rounded-full text-[11px] font-medium shrink-0', src.color)}>{src.label}</span>
                     <div className="min-w-0">
@@ -359,7 +387,7 @@ function MobileHome(props) {
       {/* Lançamentos */}
       <div className="px-4 pt-4">
         <div className="flex items-center justify-between mb-2">
-          <span className="label-eyebrow text-muted-foreground">Lançamentos</span>
+          <span className="label-eyebrow text-muted-foreground">Lançamentos <span className="normal-case tracking-normal font-normal">· toque para editar</span></span>
           {selectedDate && (
             <button onClick={() => onSelectDate(null)} className="text-xs text-muted-foreground hover:text-foreground">
               {dayLabel(selectedDate)} · limpar
@@ -371,25 +399,28 @@ function MobileHome(props) {
             <div className="rounded-xl border border-border bg-card p-6 text-center text-sm text-muted-foreground">Nenhum lançamento.</div>
           )}
           {filteredExpenses.map((e) => (
-            <div key={e.id} className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card p-3">
+            <div key={e.id} onClick={() => onEdit({ kind: 'expense', row: e })} className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card p-3 active:bg-secondary/60 cursor-pointer">
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-sm font-medium text-foreground truncate">{e.description || e.category || 'Gasto'}</span>
                   <PaymentBadge method={e.payment_method} />
+                  <InstallmentTag entry={e} />
                 </div>
                 <p className="text-xs text-muted-foreground mt-0.5">{dayLabel(e.date)}{e.category && e.description ? ` · ${e.category}` : ''}</p>
               </div>
               <div className="flex items-center gap-1 shrink-0">
                 <span className="tnum text-sm font-semibold text-expense">- {formatBRL(e.amount)}</span>
-                <ConfirmDelete
-                  title="Excluir este gasto?"
-                  description={`${e.description || e.category || 'Gasto'} · ${formatBRL(e.amount)} · ${dayLabel(e.date)}`}
-                  onConfirm={() => onDelete(e.id)}
-                >
-                  <button className="p-1.5 -mr-1 text-muted-foreground hover:text-expense" aria-label="Excluir gasto">
-                    <X className="w-4 h-4" />
-                  </button>
-                </ConfirmDelete>
+                <span onClick={(ev) => ev.stopPropagation()}>
+                  <ConfirmDelete
+                    title="Excluir este gasto?"
+                    description={`${e.description || e.category || 'Gasto'} · ${formatBRL(e.amount)} · ${dayLabel(e.date)}`}
+                    onConfirm={() => onDelete(e.id)}
+                  >
+                    <button className="p-1.5 -mr-1 text-muted-foreground hover:text-expense" aria-label="Excluir gasto">
+                      <X className="w-4 h-4" />
+                    </button>
+                  </ConfirmDelete>
+                </span>
               </div>
             </div>
           ))}

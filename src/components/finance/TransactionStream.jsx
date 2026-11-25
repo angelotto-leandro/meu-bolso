@@ -1,10 +1,10 @@
 import React from 'react';
-import { PaymentBadge } from '@/components/finance/PaymentBadge';
+import { PaymentBadge, InstallmentTag } from '@/components/finance/PaymentBadge';
 import ConfirmDelete from '@/components/finance/ConfirmDelete';
 import { formatBRL, dayLabel, weekdayLabel } from '@/lib/format';
 import { Trash2, FilterX, Inbox } from 'lucide-react';
 
-export default function TransactionStream({ dailyExpenses, selectedDate, onClearFilter, onDelete }) {
+export default function TransactionStream({ dailyExpenses, selectedDate, onClearFilter, onDelete, onEdit }) {
   const filtered = selectedDate ? dailyExpenses.filter((e) => e.date === selectedDate) : dailyExpenses;
   const sorted = [...filtered].sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
 
@@ -38,16 +38,23 @@ export default function TransactionStream({ dailyExpenses, selectedDate, onClear
             </div>
             <div className="space-y-0.5">
               {groups[date].map((e) => (
-                <div key={e.id} className="flex items-center justify-between gap-3 py-1.5">
+                <div
+                  key={e.id}
+                  onClick={() => onEdit?.(e)}
+                  title="Toque para editar"
+                  className="flex items-center justify-between gap-3 py-1.5 -mx-2 px-2 rounded-lg cursor-pointer hover:bg-secondary/60 transition-colors"
+                >
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-sm font-medium text-foreground truncate">{e.description || e.category || 'Gasto'}</span>
                       <PaymentBadge method={e.payment_method} />
+                      <InstallmentTag entry={e} />
                     </div>
                     {e.category && e.description && <p className="text-xs text-muted-foreground mt-0.5">{e.category}</p>}
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
                     <span className="tnum text-sm font-semibold text-expense">- {formatBRL(e.amount)}</span>
+                    <span onClick={(ev) => ev.stopPropagation()}>
                     <ConfirmDelete
                       title="Excluir este gasto?"
                       description={`${e.description || e.category || 'Gasto'} · ${formatBRL(e.amount)} · ${dayLabel(e.date)}`}
@@ -57,6 +64,7 @@ export default function TransactionStream({ dailyExpenses, selectedDate, onClear
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </ConfirmDelete>
+                    </span>
                   </div>
                 </div>
               ))}

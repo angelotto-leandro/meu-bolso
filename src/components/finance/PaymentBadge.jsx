@@ -28,4 +28,14 @@ export function PaymentBadge({ method, size = 'sm' }) {
   );
 }
 
+// Etiqueta "3/10" das compras parceladas.
+export function InstallmentTag({ entry }) {
+  if (!entry?.installment_group) return null;
+  return (
+    <span className="inline-flex items-center rounded-full bg-brand-soft text-brand px-1.5 py-0.5 text-[10px] font-semibold tnum whitespace-nowrap">
+      {entry.installment_no}/{entry.installment_total}
+    </span>
+  );
+}
+
 export default PaymentBadge;

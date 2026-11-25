@@ -7,7 +7,7 @@ import { formatBRL, fmtDate, dayLabel, parseAmount } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import { Trash2, Plus, Loader2 } from 'lucide-react';
 
-const SOURCES = [
+export const SOURCES = [
   { key: 'salario', label: 'Salário', color: 'bg-brand text-on-brand' },
   { key: 'vale', label: 'Vale', color: 'bg-[#06B6D4] text-white' },
   { key: 'freelancer', label: 'Freelancer', color: 'bg-[#8B5CF6] text-white' },
@@ -19,7 +19,7 @@ export function sourceMeta(key) {
   return SOURCES.find((s) => s.key === key) || SOURCES[4];
 }
 
-export default function IncomeManager({ incomes, onSaved, defaultDate }) {
+export default function IncomeManager({ incomes, onSaved, defaultDate, onEdit }) {
   const [amount, setAmount] = useState('');
   const [source, setSource] = useState('salario');
   const [date, setDate] = useState(defaultDate || fmtDate(new Date()));
@@ -65,7 +65,7 @@ export default function IncomeManager({ incomes, onSaved, defaultDate }) {
         {incomes.map((e) => {
           const src = sourceMeta(e.source);
           return (
-            <div key={e.id} className="flex items-center justify-between gap-2 py-1.5 border-b border-border last:border-0">
+            <div key={e.id} onClick={() => onEdit?.({ kind: 'income', row: e })} className="flex items-center justify-between gap-2 py-1.5 border-b border-border last:border-0 cursor-pointer hover:bg-secondary/50 -mx-1 px-1 rounded">
               <div className="min-w-0 flex items-center gap-2">
                 <span className={cn('px-2 py-0.5 rounded-full text-[11px] font-medium shrink-0', src.color)}>{src.label}</span>
                 <div className="min-w-0">
@@ -75,9 +75,11 @@ export default function IncomeManager({ incomes, onSaved, defaultDate }) {
               </div>
               <div className="flex items-center gap-1 shrink-0">
                 <span className="tnum text-sm font-semibold text-brand">{formatBRL(e.amount)}</span>
+                <span onClick={(ev) => ev.stopPropagation()}>
                 <ConfirmDelete title="Excluir esta receita?" onConfirm={() => remove(e.id)}>
                   <button className="text-muted-foreground hover:text-expense transition-colors p-1" aria-label="Excluir receita"><Trash2 className="w-3.5 h-3.5" /></button>
                 </ConfirmDelete>
+                </span>
               </div>
             </div>
           );

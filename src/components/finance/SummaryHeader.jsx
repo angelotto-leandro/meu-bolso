@@ -4,11 +4,11 @@ import { formatBRL } from '@/lib/format';
 import InvoiceStatus from '@/components/finance/InvoiceStatus';
 import { cn } from '@/lib/utils';
 
-export default function SummaryHeader({ period, onCloseInvoice, onOpenMenu, onOpenStatement, onPrev, onNext, receitas, despesasFixas, gastosDiarios, saldo }) {
+export default function SummaryHeader({ period, onCloseInvoice, onOpenMenu, onOpenStatement, onPrev, onNext, receitas, despesasFixas, gastosDiarios, saldo, fixedOpen }) {
   const saldoPositive = saldo >= 0;
   const cards = [
     { label: 'Receitas', value: receitas, icon: TrendingUp, tone: 'emerald', statement: 'receitas' },
-    { label: 'Despesas Fixas', value: despesasFixas, icon: PiggyBank, tone: 'slate', statement: 'fixas' },
+    { label: 'Despesas Fixas', value: despesasFixas, icon: PiggyBank, tone: 'slate', statement: 'fixas', note: despesasFixas > 0 ? (fixedOpen > 0 ? `Falta pagar ${formatBRL(fixedOpen)}` : 'Tudo pago ✓') : null },
     { label: 'Gastos Diários', value: gastosDiarios, icon: TrendingDown, tone: 'slate', statement: 'diarios' },
     { label: 'Saldo Restante', value: saldo, icon: Wallet, tone: saldoPositive ? 'emerald' : 'rose', highlight: true },
   ];
@@ -54,6 +54,7 @@ export default function SummaryHeader({ period, onCloseInvoice, onOpenMenu, onOp
               <p className={cn('font-display font-bold tnum tracking-tight text-xl lg:text-2xl', c.highlight ? (positive ? 'text-brand' : 'text-expense') : 'text-foreground')}>
                 {formatBRL(c.value)}
               </p>
+              {c.note && <p className={cn('text-[11px] mt-1', c.note.startsWith('Tudo') ? 'text-brand' : 'text-muted-foreground')}>{c.note}</p>}
             </div>
           );
         })}
