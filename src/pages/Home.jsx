@@ -8,6 +8,10 @@ import InvoiceStatus from '@/components/finance/InvoiceStatus';
 import InvoiceCloseDialog from '@/components/finance/InvoiceCloseDialog';
 import EditEntrySheet from '@/components/finance/EditEntrySheet';
 import SearchSheet from '@/components/finance/SearchSheet';
+import BudgetSheet from '@/components/finance/BudgetSheet';
+import EvolutionSheet from '@/components/finance/EvolutionSheet';
+import BudgetBar from '@/components/finance/BudgetBar';
+import { useBudgets, budgetRows, spendingByCategory } from '@/hooks/useBudgets';
 import PaidToggle from '@/components/finance/PaidToggle';
 import { fixedStatus, fixedTotals } from '@/lib/fixed';
 import { supabase, unwrap } from '@/lib/supabase';
@@ -46,6 +50,9 @@ export default function Home() {
   const [editing, setEditing] = useState(null); // { kind: 'expense' | 'income', row }
   const [searchOpen, setSearchOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const budgetsApi = useBudgets();
+  const [budgetOpen, setBudgetOpen] = useState(false);
+  const [evoOpen, setEvoOpen] = useState(false);
   const { categories, reloadCategories } = useCategories();
   const [menuOpen, setMenuOpen] = useState(false);
   const [statement, setStatement] = useState(null);
@@ -77,6 +84,7 @@ export default function Home() {
   };
 
   const defaultEntryDate = selectedDate || fmtDate(new Date());
+  const budgetList = budgetRows(budgetsApi.budgets, spendingByCategory(dailyExpenses, fixedExpenses));
 
   if (loading || !period) {
     return (
@@ -119,7 +127,19 @@ export default function Home() {
         billing={billing}
         categories={categories}
         onCategoriesChanged={reloadCategories}
+        onOpenBudgets={() => setBudgetOpen(true)}
+        onOpenEvolution={() => setEvoOpen(true)}
       />
+      <BudgetSheet
+        open={budgetOpen}
+        onOpenChange={setBudgetOpen}
+        budgetsApi={budgetsApi}
+        dailyExpenses={dailyExpenses}
+        fixedExpenses={fixedExpenses}
+        period={period}
+        customCategories={categories}
+      />
+      <EvolutionSheet open={evoOpen} onOpenChange={setEvoOpen} monthDate={monthDate} billing={billing} />
       <StatementSheet
         open={!!statement}
         onOpenChange={(o) => !o && setStatement(null)}
@@ -182,6 +202,8 @@ export default function Home() {
           onOpenMenu={() => setMenuOpen(true)}
           onOpenStatement={setStatement}
           onSearch={() => setSearchOpen(true)}
+          budgetList={budgetList}
+          onOpenBudgets={() => setBudgetOpen(true)}
         />
         <MobileEntrySheet open={mobileOpen} onOpenChange={setMobileOpen} {...entryProps} />
         {shared}
@@ -209,6 +231,7 @@ export default function Home() {
         />
         <div className="grid grid-cols-1 lg:grid-cols-[65fr_35fr] gap-6 items-start">
           <div className="space-y-4 lg:min-w-0">
+            <BudgetSummary rows={budgetList} onOpen={() => setBudgetOpen(true)} />
             <CalendarMatrix days={periodDays(period)} dailyExpenses={dailyExpenses} selectedDate={selectedDate} onSelectDate={setSelectedDate} />
             <TransactionStream dailyExpenses={dailyExpenses} selectedDate={selectedDate} onClearFilter={() => setSelectedDate(null)} onDelete={deleteExpense} onEdit={(e) => setEditing({ kind: 'expense', row: e })} />
           </div>
@@ -222,12 +245,29 @@ export default function Home() {
   );
 }
 
+function BudgetSummary({ rows, onOpen, className }) {
+  if (!rows.length) return null;
+  return (
+    <div className={className}>
+      <div className="flex items-center justify-between mb-2">
+        <span className="label-eyebrow text-muted-foreground">Limites</span>
+        <button onClick={onOpen} className="text-xs font-semibold text-brand">Ver todos</button>
+      </div>
+      <div className="grid gap-2 sm:grid-cols-3">
+        {rows.slice(0, 3).map((r) => (
+          <BudgetBar key={r.category} row={r} compact onClick={onOpen} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function MobileHome(props) {
   const {
     period, onCloseInvoice, onPrev, onNext,
     receitas, despesasFixas, gastosDiarios, saldo,
     dailyExpenses, fixedExpenses, incomes,
-    selectedDate, onSelectDate, onDelete, onEdit, monthDate, paidMap, togglePaid, onNew, onOpenMenu, onOpenStatement, onSearch,
+    selectedDate, onSelectDate, onDelete, onEdit, monthDate, paidMap, togglePaid, onNew, onOpenMenu, onOpenStatement, onSearch, budgetList, onOpenBudgets,
   } = props;
 
   const totalExpense = despesasFixas + gastosDiarios;
@@ -312,6 +352,8 @@ function MobileHome(props) {
           </div>
         </div>
       </div>
+
+      <BudgetSummary rows={budgetList} onOpen={onOpenBudgets} className="px-4 pt-4" />
 
       {/* Dias do mês */}
       <div className="px-4 pt-4">

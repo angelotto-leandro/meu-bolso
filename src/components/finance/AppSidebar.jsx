@@ -6,14 +6,14 @@ import { DEFAULT_CATEGORIES } from '@/lib/categories';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Plus, Trash2, Tags, PieChart, Loader2, UserCircle2, LogOut, Users, Smartphone, ChevronRight, CreditCard } from 'lucide-react';
+import { Plus, Trash2, Tags, PieChart, Loader2, UserCircle2, LogOut, Users, Smartphone, ChevronRight, CreditCard, Target, BarChart3 } from 'lucide-react';
 import AdminUsersPanel from '@/components/finance/AdminUsersPanel';
 import ChartsPanel from '@/components/finance/ChartsPanel';
 import ThemePicker from '@/components/ThemePicker';
 import ShortcutSheet from '@/components/finance/ShortcutSheet';
 import BillingSheet from '@/components/finance/BillingSheet';
 
-export default function AppSidebar({ open, onOpenChange, dailyExpenses, fixedExpenses, incomes, periodLabel, billing, categories, onCategoriesChanged }) {
+export default function AppSidebar({ open, onOpenChange, dailyExpenses, fixedExpenses, incomes, periodLabel, billing, categories, onCategoriesChanged, onOpenBudgets, onOpenEvolution }) {
   const { user, logout } = useAuth();
   const [tab, setTab] = useState('categories');
   const [newName, setNewName] = useState('');
@@ -98,6 +98,23 @@ export default function AppSidebar({ open, onOpenChange, dailyExpenses, fixedExp
               </span>
               <ChevronRight className="w-4 h-4 text-muted-foreground" />
             </button>
+
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => { onOpenChange(false); onOpenBudgets?.(); }}
+                className="flex items-center gap-2 rounded-xl border border-border bg-card p-3 text-left hover:border-brand/40 transition-colors"
+              >
+                <span className="w-8 h-8 rounded-lg bg-[#F59E0B]/15 text-[#D97706] dark:text-[#FBBF24] grid place-items-center shrink-0"><Target className="w-4 h-4" /></span>
+                <span className="text-xs font-semibold text-foreground leading-tight">Limites por categoria</span>
+              </button>
+              <button
+                onClick={() => { onOpenChange(false); onOpenEvolution?.(); }}
+                className="flex items-center gap-2 rounded-xl border border-border bg-card p-3 text-left hover:border-brand/40 transition-colors"
+              >
+                <span className="w-8 h-8 rounded-lg bg-[#3B82F6]/15 text-[#3B82F6] dark:text-[#60A5FA] grid place-items-center shrink-0"><BarChart3 className="w-4 h-4" /></span>
+                <span className="text-xs font-semibold text-foreground leading-tight">Evolução</span>
+              </button>
+            </div>
 
             <div className="flex p-1 gap-1 rounded-xl bg-secondary/60">
               <button onClick={() => setTab('categories')} className={tabClass('categories')}>
