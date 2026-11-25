@@ -127,7 +127,7 @@ export default function ShortcutSheet({ open, onOpenChange }) {
           </div>
 
           <p className="text-[12px] text-muted-foreground px-1">
-            O atalho tem <B>8 ações</B>. Para adicionar cada uma: no app <B>Atalhos</B>, toque na barra <B>“Pesquisar Ações”</B> (embaixo), digite o nome e toque nela.
+            O atalho tem <B>9 ações</B>. Para adicionar cada uma: no app <B>Atalhos</B>, toque na barra <B>“Buscar Ações”</B> (embaixo), digite o nome e toque nela.
           </p>
 
           <Part n={1} title="A primeira pergunta">
@@ -150,11 +150,11 @@ export default function ShortcutSheet({ open, onOpenChange }) {
               <ul className="list-disc pl-5 space-y-1">
                 <li><B>Método:</B> troque para <C>POST</C></li>
                 <li><B>Cabeçalhos:</B> toque em <B>Adicionar novo cabeçalho</B>. Chave: <C>apikey</C> · Texto: cole a <B>Chave</B> (item 3)</li>
-                <li><B>Corpo da Solicitação:</B> deixe <C>JSON</C>. Toque em <B>Adicionar novo campo → Texto</B> duas vezes:</li>
+                <li><B>Pedir Corpo:</B> deixe <C>JSON</C>. Toque em <B>Adicionar novo campo → Texto</B> duas vezes:</li>
               </ul>
               <div className="rounded-lg bg-secondary/60 p-2.5 space-y-1 text-[12px]">
                 <p><C>token</C> → cole o seu <B>código</B> (item 1)</p>
-                <p><C>tipo</C> → toque no espaço do valor e escolha <B>Item Escolhido</B> na barra acima do teclado</p>
+                <p><C>tipo</C> → toque no espaço do valor e escolha <B>Item Selecionado</B> na barra acima do teclado</p>
               </div>
             </Step>
             <Step n={5} title="Ação “Escolher da Lista” (de novo)">
@@ -162,40 +162,45 @@ export default function ShortcutSheet({ open, onOpenChange }) {
             </Step>
           </Part>
 
-          <Part n={3} title="Valor e data">
+          <Part n={3} title="Valor, data e descrição">
             <Step n={6} title="Ação “Pedir Entrada” (valor)">
               <p>Adicione. Toque em <B>Texto</B> e troque para <C>Número</C>. Em Pergunta escreva <C>Valor</C>.</p>
               <p>Toque na setinha <B>›</B> e ligue <B>Permitir Decimais</B>.</p>
             </Step>
             <Step n={7} title="Ação “Pedir Entrada” (data)">
               <p>Adicione outra. Troque o tipo para <C>Data</C>. Pergunta: <C>Data</C>.</p>
-              <p>Na setinha <B>›</B>, em Resposta Padrão escolha <B>Data Atual</B>. Assim, se for hoje, é só tocar em OK.</p>
+              <p>Na setinha <B>›</B>, em Data Padrão escolha <B>Data Atual</B> (ou deixe vazio). Assim, se for hoje, é só tocar em OK.</p>
+            </Step>
+            <Step n={8} title="Ação “Pedir Entrada” (descrição)">
+              <p>Adicione outra. Deixe o tipo <C>Texto</C>. Pergunta: <C>Descrição (opcional)</C>.</p>
+              <p>Ao usar: escreva algo como “Padaria” ou <B>deixe em branco e toque em OK</B>. Só não toque em <B>Cancelar</B>, que interrompe o atalho.</p>
             </Step>
           </Part>
 
           <Part n={4} title="Salvar no app">
-            <Step n={8} title="Duplicar a ação do passo 4">
+            <Step n={9} title="Duplicar a ação do passo 4">
               <p>Volte na ação <B>Obter Conteúdo de URL</B> (passo 4), <B>segure o dedo</B> nela → <B>Duplicar</B>. Arraste a cópia para o <B>final</B> do atalho.</p>
-              <p>Na cópia, adicione mais 3 campos de Texto no corpo JSON:</p>
+              <p>Na cópia, adicione mais 4 campos de Texto no corpo JSON:</p>
               <div className="rounded-lg bg-secondary/60 p-2.5 space-y-1 text-[12px]">
-                <p><C>item</C> → <B>Item Escolhido</B> da <B>segunda</B> lista (passo 5)</p>
+                <p><C>item</C> → <B>Item Selecionado</B> da <B>segunda</B> lista (passo 5)</p>
                 <p><C>valor</C> → <B>Entrada Fornecida</B> do <B>valor</B> (passo 6)</p>
                 <p><C>data</C> → <B>Entrada Fornecida</B> da <B>data</B> (passo 7)</p>
+                <p><C>descricao</C> (sem acento) → <B>Entrada Fornecida</B> da <B>descrição</B> (passo 8)</p>
               </div>
               <p className="text-[12px]">
                 Como escolher a variável certa: toque no espaço do valor → <B>Selecionar Variável</B> → a tela volta para o atalho → <B>toque na bolinha</B> de resultado da ação certa.
               </p>
             </Step>
-            <Step n={9} title="Ação “Mostrar Notificação”">
+            <Step n={10} title="Ação “Mostrar Notificação”">
               <p>Adicione no final. Ela já vem com <B>Conteúdos da URL</B>, que é a mensagem “✅ Gasto de R$ ...”.</p>
             </Step>
           </Part>
 
           <Part n={5} title="Ligar aos dois toques">
-            <Step n={10} title="Testar">
+            <Step n={11} title="Testar">
               <p>Toque no <B>▶</B> (canto de baixo) para testar. Na primeira vez o iPhone pergunta se pode acessar o Supabase: toque em <B>Permitir Sempre</B>.</p>
             </Step>
-            <Step n={11} title="Toque Atrás">
+            <Step n={12} title="Toque Atrás">
               <p>Ajustes → Acessibilidade → Toque → <B>Toque Atrás</B> → <B>Toque Duplo</B> → role até <B>Lançar</B>.</p>
             </Step>
           </Part>
@@ -212,15 +217,16 @@ export default function ShortcutSheet({ open, onOpenChange }) {
             <p className="mt-2">Passo 4:</p>
             <pre className="mt-1 rounded-lg bg-card border border-border p-3 overflow-x-auto text-[11px] text-foreground">{`{
   "token": "${tokenText}",
-  "tipo": [Item Escolhido]
+  "tipo": [Item Selecionado]
 }`}</pre>
-            <p className="mt-2">Passo 8:</p>
+            <p className="mt-2">Passo 9:</p>
             <pre className="mt-1 rounded-lg bg-card border border-border p-3 overflow-x-auto text-[11px] text-foreground">{`{
   "token": "${tokenText}",
-  "tipo": [Item Escolhido — 1ª lista],
-  "item": [Item Escolhido — 2ª lista],
+  "tipo": [Item Selecionado — 1ª lista],
+  "item": [Item Selecionado — 2ª lista],
   "valor": [Entrada Fornecida — valor],
-  "data": [Entrada Fornecida — data]
+  "data": [Entrada Fornecida — data],
+  "descricao": [Entrada Fornecida — descrição]
 }`}</pre>
           </details>
         </div>
