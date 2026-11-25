@@ -13,6 +13,14 @@ import { Search, Loader2, X } from 'lucide-react';
 
 const addMonths = (d, n) => new Date(d.getFullYear(), d.getMonth() + n, 1);
 
+// Tira acentos e deixa minúsculo: "Relógio Café" -> "relogio cafe".
+const normalize = (s) =>
+  String(s || '')
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .trim();
+
 function Chip({ on, onClick, children }) {
   return (
     <button
@@ -61,18 +69,25 @@ export default function SearchSheet({ open, onOpenChange, monthDate, billing, cu
 
   useEffect(() => {
     if (!open || !user?.id) return;
-    const term = q.trim().replace(/[,()*%\\]/g, ' ').trim();
+    // Palavras digitadas, sem acento e em minúsculas: "Relógio" = "relogio".
+    const words = normalize(q).split(/\s+/).filter(Boolean);
     const t = setTimeout(async () => {
       setLoading(true);
       setError('');
       try {
         let query = supabase.from('daily_expenses').select('*').eq('user_id', user.id);
-        if (term) query = query.or(`description.ilike.*${term}*,category.ilike.*${term}*`);
         if (pays.size) query = query.in('payment_method', [...pays]);
         if (cats.size) query = query.in('category', [...cats]);
         if (bounds) query = query.gte('date', bounds.start).lte('date', bounds.end);
-        const data = await unwrap(query.order('date', { ascending: false }).order('created_at', { ascending: false }).limit(300));
-        setResults(data);
+        // Com texto, o app traz mais lançamentos e filtra aqui (ignorando acentos); sem texto, só os 300 mais recentes.
+        const data = await unwrap(query.order('date', { ascending: false }).order('created_at', { ascending: false }).limit(words.length ? 3000 : 300));
+        const found = words.length
+          ? data.filter((e) => {
+              const text = normalize(`${e.description || ''} ${e.category || ''}`);
+              return words.every((w) => text.includes(w));
+            })
+          : data;
+        setResults(found.slice(0, 300));
       } catch (e) {
         setError(e.message || 'Não foi possível buscar.');
       } finally {
