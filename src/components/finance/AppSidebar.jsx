@@ -6,18 +6,20 @@ import { DEFAULT_CATEGORIES } from '@/lib/categories';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Plus, Trash2, Tags, PieChart, Loader2, UserCircle2, LogOut, Users, Smartphone, ChevronRight } from 'lucide-react';
+import { Plus, Trash2, Tags, PieChart, Loader2, UserCircle2, LogOut, Users, Smartphone, ChevronRight, CreditCard } from 'lucide-react';
 import AdminUsersPanel from '@/components/finance/AdminUsersPanel';
 import ChartsPanel from '@/components/finance/ChartsPanel';
 import ShortcutSheet from '@/components/finance/ShortcutSheet';
+import BillingSheet from '@/components/finance/BillingSheet';
 
-export default function AppSidebar({ open, onOpenChange, dailyExpenses, fixedExpenses, incomes, monthDate, categories, onCategoriesChanged }) {
+export default function AppSidebar({ open, onOpenChange, dailyExpenses, fixedExpenses, incomes, periodLabel, billing, categories, onCategoriesChanged }) {
   const { user, logout } = useAuth();
   const [tab, setTab] = useState('categories');
   const [newName, setNewName] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [shortcutOpen, setShortcutOpen] = useState(false);
+  const [billingOpen, setBillingOpen] = useState(false);
 
   const customNames = categories.map((c) => c.name);
 
@@ -82,6 +84,20 @@ export default function AppSidebar({ open, onOpenChange, dailyExpenses, fixedExp
               <ChevronRight className="w-4 h-4 text-muted-foreground" />
             </button>
 
+            <button
+              onClick={() => setBillingOpen(true)}
+              className="w-full flex items-center gap-3 rounded-xl border border-border bg-card p-3 text-left hover:border-[#059669]/40 transition-colors"
+            >
+              <span className="w-9 h-9 rounded-lg bg-[#8B5CF6]/10 text-[#8B5CF6] grid place-items-center shrink-0"><CreditCard className="w-4 h-4" /></span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-semibold text-foreground">Fatura do cartão</span>
+                <span className="block text-[11px] text-muted-foreground">
+                  {billing?.closeDay ? `Por fatura · fecha dia ${billing.closeDay}` : 'Desligado · mês a mês'}
+                </span>
+              </span>
+              <ChevronRight className="w-4 h-4 text-muted-foreground" />
+            </button>
+
             <div className="flex p-1 gap-1 rounded-xl bg-secondary/60">
               <button onClick={() => setTab('categories')} className={tabClass('categories')}>
                 <Tags className="w-3.5 h-3.5" /> Categorias
@@ -131,7 +147,7 @@ export default function AppSidebar({ open, onOpenChange, dailyExpenses, fixedExp
             ) : tab === 'users' ? (
               <AdminUsersPanel />
             ) : (
-              <ChartsPanel dailyExpenses={dailyExpenses} fixedExpenses={fixedExpenses} incomes={incomes} monthDate={monthDate} />
+              <ChartsPanel dailyExpenses={dailyExpenses} fixedExpenses={fixedExpenses} incomes={incomes} periodLabel={periodLabel} />
             )}
           </div>
 
@@ -143,6 +159,7 @@ export default function AppSidebar({ open, onOpenChange, dailyExpenses, fixedExp
         </SheetContent>
       </Sheet>
       <ShortcutSheet open={shortcutOpen} onOpenChange={setShortcutOpen} />
+      {billing && <BillingSheet open={billingOpen} onOpenChange={setBillingOpen} billing={billing} />}
     </>
   );
 }

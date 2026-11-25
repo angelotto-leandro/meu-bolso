@@ -57,11 +57,11 @@ export default function IncomeManager({ incomes, onSaved, defaultDate }) {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h4 className="font-display font-semibold text-foreground text-sm">Receitas do mês</h4>
+        <h4 className="font-display font-semibold text-foreground text-sm">Receitas</h4>
         <span className="tnum text-xs text-[#059669] font-medium">{formatBRL(total)}</span>
       </div>
       <div className="space-y-1">
-        {incomes.length === 0 && <p className="text-xs text-muted-foreground py-1">Nenhuma receita lançada neste mês.</p>}
+        {incomes.length === 0 && <p className="text-xs text-muted-foreground py-1">Nenhuma receita lançada neste período.</p>}
         {incomes.map((e) => {
           const src = sourceMeta(e.source);
           return (

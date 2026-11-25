@@ -5,7 +5,7 @@ import FixedExpenseManager from './FixedExpenseManager';
 import IncomeManager from './IncomeManager';
 import { ReceiptText, Wallet } from 'lucide-react';
 
-export default function EntryTabs({ fixedExpenses, incomes, onSaved, defaultDate, monthDate, customCategories = [] }) {
+export default function EntryTabs({ fixedExpenses, incomes, onSaved, defaultDate, monthDate, periodLabel, customCategories = [] }) {
   const [tab, setTab] = useState('daily');
   return (
     <div className="space-y-3">
@@ -27,7 +27,7 @@ export default function EntryTabs({ fixedExpenses, incomes, onSaved, defaultDate
         <DailyExpenseForm key={defaultDate} onSaved={onSaved} defaultDate={defaultDate} customCategories={customCategories} />
       ) : (
         <div className="space-y-5">
-          <FixedExpenseManager fixedExpenses={fixedExpenses} onSaved={onSaved} monthDate={monthDate} customCategories={customCategories} />
+          <FixedExpenseManager fixedExpenses={fixedExpenses} onSaved={onSaved} monthDate={monthDate} periodLabel={periodLabel} customCategories={customCategories} />
           <div className="h-px bg-border" />
           <IncomeManager key={defaultDate} incomes={incomes} onSaved={onSaved} defaultDate={defaultDate} />
         </div>

@@ -1,9 +1,10 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight, Wallet, TrendingUp, TrendingDown, PiggyBank } from 'lucide-react';
-import { formatBRL, monthLabel } from '@/lib/format';
+import { formatBRL } from '@/lib/format';
+import InvoiceStatus from '@/components/finance/InvoiceStatus';
 import { cn } from '@/lib/utils';
 
-export default function SummaryHeader({ monthDate, onOpenMenu, onOpenStatement, onPrev, onNext, receitas, despesasFixas, gastosDiarios, saldo }) {
+export default function SummaryHeader({ period, onCloseInvoice, onOpenMenu, onOpenStatement, onPrev, onNext, receitas, despesasFixas, gastosDiarios, saldo }) {
   const saldoPositive = saldo >= 0;
   const cards = [
     { label: 'Receitas', value: receitas, icon: TrendingUp, tone: 'emerald', statement: 'receitas' },
@@ -22,11 +23,12 @@ export default function SummaryHeader({ monthDate, onOpenMenu, onOpenStatement, 
           </div>
         </div>
         <div className="inline-flex items-center gap-1 rounded-full border border-border bg-card p-1 shadow-sm">
-          <button onClick={onPrev} aria-label="Mês anterior" className="p-1.5 rounded-full hover:bg-secondary text-muted-foreground transition-colors"><ChevronLeft className="w-4 h-4" /></button>
-          <span className="px-3 text-sm font-semibold min-w-[150px] text-center text-foreground">{monthLabel(monthDate)}</span>
-          <button onClick={onNext} aria-label="Próximo mês" className="p-1.5 rounded-full hover:bg-secondary text-muted-foreground transition-colors"><ChevronRight className="w-4 h-4" /></button>
+          <button onClick={onPrev} aria-label="Período anterior" className="p-1.5 rounded-full hover:bg-secondary text-muted-foreground transition-colors"><ChevronLeft className="w-4 h-4" /></button>
+          <span className="px-3 text-sm font-semibold min-w-[150px] text-center text-foreground">{period.label}</span>
+          <button onClick={onNext} aria-label="Próximo período" className="p-1.5 rounded-full hover:bg-secondary text-muted-foreground transition-colors"><ChevronRight className="w-4 h-4" /></button>
         </div>
       </div>
+      <InvoiceStatus period={period} onClose={onCloseInvoice} className="justify-end -mt-2" />
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {cards.map((c) => {
           const positive = c.tone === 'emerald';

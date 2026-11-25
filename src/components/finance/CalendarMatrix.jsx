@@ -1,8 +1,9 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { fmtDate } from '@/lib/format';
+import { fmtDate, parseDate } from '@/lib/format';
 
 const WEEKDAYS = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
+const MONTHS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
 
 function heatLevel(total) {
   if (total <= 0) return 0;
@@ -14,21 +15,18 @@ function heatLevel(total) {
 const dotSize = { 1: 'w-1 h-1', 2: 'w-1.5 h-1.5', 3: 'w-2 h-2' };
 const dotOpacity = { 1: 'opacity-40', 2: 'opacity-70', 3: 'opacity-100' };
 
-export default function CalendarMatrix({ monthDate, dailyExpenses, selectedDate, onSelectDate }) {
-  const year = monthDate.getFullYear();
-  const month = monthDate.getMonth();
+// days = lista 'AAAA-MM-DD' do período (mês ou fatura)
+export default function CalendarMatrix({ days, dailyExpenses, selectedDate, onSelectDate }) {
   const today = fmtDate(new Date());
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const startWeekday = new Date(year, month, 1).getDay();
+  const startWeekday = days.length ? parseDate(days[0]).getDay() : 0;
+  const crossesMonth = days.length > 0 && days[0].slice(0, 7) !== days[days.length - 1].slice(0, 7);
 
   const spendByDay = {};
   dailyExpenses.forEach((e) => {
     spendByDay[e.date] = (spendByDay[e.date] || 0) + Number(e.amount || 0);
   });
 
-  const cells = [];
-  for (let i = 0; i < startWeekday; i++) cells.push(null);
-  for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+  const cells = [...Array(startWeekday).fill(null), ...days];
 
   return (
     <div className="rounded-xl border border-border bg-card p-4">
@@ -38,16 +36,17 @@ export default function CalendarMatrix({ monthDate, dailyExpenses, selectedDate,
         ))}
       </div>
       <div className="grid grid-cols-7 gap-1">
-        {cells.map((d, i) => {
-          if (d === null) return <div key={i} />;
-          const ds = fmtDate(new Date(year, month, d));
+        {cells.map((ds, i) => {
+          if (ds === null) return <div key={i} />;
+          const d = parseDate(ds);
           const spend = spendByDay[ds] || 0;
           const level = heatLevel(spend);
           const isSelected = selectedDate === ds;
           const isToday = today === ds;
+          const showMonth = crossesMonth && (ds === days[0] || d.getDate() === 1);
           return (
             <button
-              key={i}
+              key={ds}
               onClick={() => onSelectDate(isSelected ? null : ds)}
               className={cn(
                 'aspect-square rounded-lg flex flex-col items-center justify-center gap-1 transition-colors',
@@ -58,7 +57,10 @@ export default function CalendarMatrix({ monthDate, dailyExpenses, selectedDate,
                     : 'hover:bg-secondary text-foreground'
               )}
             >
-              <span className="text-xs font-medium">{d}</span>
+              <span className="text-xs font-medium">
+                {d.getDate()}
+                {showMonth && <span className="ml-0.5 text-[10px] opacity-60">/{MONTHS[d.getMonth()]}</span>}
+              </span>
               {level > 0 && (
                 <span className={cn('rounded-full', isSelected ? 'bg-white' : 'bg-[#059669]', dotSize[level], !isSelected && dotOpacity[level])} />
               )}

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
-import { formatBRL, monthLabel } from '@/lib/format';
+import { formatBRL } from '@/lib/format';
 import { sourceMeta } from '@/components/finance/IncomeManager';
 import { cn } from '@/lib/utils';
 
@@ -60,8 +60,8 @@ function BreakdownChart({ title, data, colors, emptyMessage, totalClass }) {
   );
 }
 
-export default function ChartsPanel({ dailyExpenses, fixedExpenses, incomes, monthDate }) {
-  const month = monthLabel(monthDate);
+export default function ChartsPanel({ dailyExpenses, fixedExpenses, incomes, periodLabel }) {
+  const month = periodLabel;
 
   const expenseTotals = useMemo(() => {
     const m = {};

@@ -17,7 +17,7 @@ export function fixedPeriodLabel(e) {
   return `desde ${monthOfLabel(e.start_month)}`;
 }
 
-function RemoveFixedDialog({ expense, monthDate, onDone }) {
+function RemoveFixedDialog({ expense, monthDate, periodLabel, onDone }) {
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState('');
   const [error, setError] = useState('');
@@ -60,8 +60,8 @@ function RemoveFixedDialog({ expense, monthDate, onDone }) {
         <div className="flex flex-col gap-2">
           {canEnd && (
             <Button onClick={() => run('end')} disabled={!!busy} className="h-auto py-2.5 flex-col items-start gap-0.5 bg-[#059669] hover:bg-[#047857] whitespace-normal text-left">
-              <span className="flex items-center gap-2">{busy === 'end' && <Loader2 className="animate-spin" />}Encerrar em {monthLabel(monthDate)}</span>
-              <span className="text-[11px] font-normal opacity-90">Conta até este mês e some a partir do próximo.</span>
+              <span className="flex items-center gap-2">{busy === 'end' && <Loader2 className="animate-spin" />}Encerrar em {periodLabel || monthLabel(monthDate)}</span>
+              <span className="text-[11px] font-normal opacity-90">Conta até aqui e some a partir do próximo período.</span>
             </Button>
           )}
           <Button variant="outline" onClick={() => run('delete')} disabled={!!busy} className="h-auto py-2.5 flex-col items-start gap-0.5 text-rose-600 hover:text-rose-700 whitespace-normal text-left">
@@ -75,7 +75,7 @@ function RemoveFixedDialog({ expense, monthDate, onDone }) {
   );
 }
 
-export default function FixedExpenseManager({ fixedExpenses, onSaved, monthDate, customCategories = [] }) {
+export default function FixedExpenseManager({ fixedExpenses, onSaved, monthDate, periodLabel, customCategories = [] }) {
   const allCategories = allCategoryNames(customCategories);
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
@@ -123,10 +123,10 @@ export default function FixedExpenseManager({ fixedExpenses, onSaved, monthDate,
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <h4 className="font-display font-semibold text-foreground text-sm">Gastos Fixos</h4>
-        <span className="tnum text-xs text-muted-foreground">{formatBRL(total)}/mês</span>
+        <span className="tnum text-xs text-muted-foreground">{formatBRL(total)}</span>
       </div>
       <div className="space-y-1">
-        {fixedExpenses.length === 0 && <p className="text-xs text-muted-foreground py-1">Nenhum gasto fixo neste mês.</p>}
+        {fixedExpenses.length === 0 && <p className="text-xs text-muted-foreground py-1">Nenhum gasto fixo neste período.</p>}
         {fixedExpenses.map((e) => (
           <div key={e.id} className="flex items-center justify-between gap-2 py-1.5 border-b border-border last:border-0">
             <div className="min-w-0">
@@ -140,7 +140,7 @@ export default function FixedExpenseManager({ fixedExpenses, onSaved, monthDate,
             </div>
             <div className="flex items-center gap-1 shrink-0">
               <span className="tnum text-sm font-semibold text-foreground">{formatBRL(e.amount)}</span>
-              <RemoveFixedDialog expense={e} monthDate={monthDate} onDone={onSaved} />
+              <RemoveFixedDialog expense={e} monthDate={monthDate} periodLabel={periodLabel} onDone={onSaved} />
             </div>
           </div>
         ))}
@@ -168,7 +168,7 @@ export default function FixedExpenseManager({ fixedExpenses, onSaved, monthDate,
             </button>
           ))}
         </div>
-        <p className="text-[11px] text-muted-foreground">Passa a contar a partir de <span>{monthLabel(monthDate)}</span>.</p>
+        <p className="text-[11px] text-muted-foreground">Passa a contar a partir de <span>{periodLabel || monthLabel(monthDate)}</span>.</p>
         {error && <p className="text-xs text-destructive">{error}</p>}
         <Button type="submit" disabled={saving || !valid} className="w-full h-9 bg-[#059669] hover:bg-[#047857]">
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Plus className="w-4 h-4" /> Adicionar fixo</>}

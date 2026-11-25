@@ -65,6 +65,13 @@ O atalho tem 8 ações e usa um único endereço do banco (`/rest/v1/rpc/atalho`
 1. Configure o Google em **Supabase → Authentication → Sign In / Providers → Google** (o Supabase mostra o passo a passo do Google Cloud).
 2. No arquivo `.env.production`, troque `VITE_GOOGLE_LOGIN=false` por `true` e publique de novo.
 
+### Fatura do cartão (opcional, cada pessoa escolhe)
+Menu **B** → **Fatura do cartão** → ligue **Organizar pela fatura** e escolha o dia de fechamento. O app passa a mostrar **faturas** em vez de meses: com fechamento no dia 16, a *Fatura dez* vai de 16/nov a 15/dez (compras no próprio dia do fechamento já entram na fatura seguinte).
+
+Quando o banco fechar antes ou depois do dia padrão, toque em **Fechar fatura** (na fatura aberta) ou em **Fechou … · alterar** (nas fechadas) e escolha a data real. A fatura seguinte começa nesse dia.
+
+> Instalou o banco antes desta opção existir? Rode uma vez o arquivo [`supabase/fatura.sql`](supabase/fatura.sql) no SQL Editor.
+
 ### Tornar outra pessoa admin
 No **SQL Editor** do Supabase:
 ```sql

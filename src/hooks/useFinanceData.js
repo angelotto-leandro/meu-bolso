@@ -3,7 +3,8 @@ import { supabase, unwrap } from '@/lib/supabase';
 import { monthStart, monthEnd } from '@/lib/format';
 import { useAuth } from '@/lib/AuthContext';
 
-export function useFinanceData(monthDate) {
+// period = { start, end } (mês ou fatura); monthDate = mês de referência (para os gastos fixos).
+export function useFinanceData(period, monthDate) {
   const { user } = useAuth();
   const [dailyExpenses, setDailyExpenses] = useState([]);
   const [fixedExpenses, setFixedExpenses] = useState([]);
@@ -11,15 +12,18 @@ export function useFinanceData(monthDate) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const start = period?.start;
+  const end = period?.end;
+  const mStart = monthDate ? monthStart(monthDate) : null;
+  const mEnd = monthDate ? monthEnd(monthDate) : null;
+
   const load = useCallback(async () => {
-    if (!user?.id) return;
-    const start = monthStart(monthDate);
-    const end = monthEnd(monthDate);
+    if (!user?.id || !start || !end) return;
     try {
       const [d, f, i] = await Promise.all([
         unwrap(supabase.from('daily_expenses').select('*').eq('user_id', user.id).gte('date', start).lte('date', end).order('date', { ascending: false })),
-        // Gasto fixo conta no mês se começou até o fim do mês e não terminou antes do início dele.
-        unwrap(supabase.from('fixed_expenses').select('*').eq('user_id', user.id).lte('start_month', end).or(`end_month.is.null,end_month.gte.${start}`).order('due_day')),
+        // Gasto fixo conta uma vez por mês/fatura: se começou até esse mês e não terminou antes dele.
+        unwrap(supabase.from('fixed_expenses').select('*').eq('user_id', user.id).lte('start_month', mEnd).or(`end_month.is.null,end_month.gte.${mStart}`).order('due_day')),
         unwrap(supabase.from('incomes').select('*').eq('user_id', user.id).gte('date', start).lte('date', end).order('date', { ascending: false })),
       ]);
       setDailyExpenses(d);
@@ -31,7 +35,7 @@ export function useFinanceData(monthDate) {
     } finally {
       setLoading(false);
     }
-  }, [monthDate, user?.id]);
+  }, [user?.id, start, end, mStart, mEnd]);
 
   useEffect(() => {
     load();

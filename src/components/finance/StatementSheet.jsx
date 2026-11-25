@@ -1,17 +1,17 @@
 import React, { useMemo } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
-import { formatBRL, monthLabel, dayLabel } from '@/lib/format';
+import { formatBRL, dayLabel } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import { PaymentBadge } from '@/components/finance/PaymentBadge';
 import { sourceMeta } from '@/components/finance/IncomeManager';
 
 const META = {
-  diarios: { title: 'Extrato de gastos diários', empty: 'Nenhum gasto diário neste mês.' },
-  fixas: { title: 'Despesas fixas', empty: 'Nenhuma despesa fixa neste mês.' },
-  receitas: { title: 'Receitas do mês', empty: 'Nenhuma receita neste mês.' },
+  diarios: { title: 'Extrato de gastos diários', empty: 'Nenhum gasto diário neste período.' },
+  fixas: { title: 'Despesas fixas', empty: 'Nenhuma despesa fixa neste período.' },
+  receitas: { title: 'Receitas', empty: 'Nenhuma receita neste período.' },
 };
 
-export default function StatementSheet({ open, onOpenChange, type, monthDate, dailyExpenses = [], fixedExpenses = [], incomes = [] }) {
+export default function StatementSheet({ open, onOpenChange, type, period, dailyExpenses = [], fixedExpenses = [], incomes = [] }) {
   const meta = META[type] || META.diarios;
 
   const { items, total } = useMemo(() => {
@@ -35,7 +35,7 @@ export default function StatementSheet({ open, onOpenChange, type, monthDate, da
         <SheetHeader className="p-4 pb-3 pr-12 border-b border-border text-left space-y-1">
           <SheetTitle className="text-base font-display">{meta.title}</SheetTitle>
           <div className="flex items-center justify-between">
-            <SheetDescription className="text-xs">{monthLabel(monthDate)}</SheetDescription>
+            <SheetDescription className="text-xs">{period.label}{period.range ? ` · ${period.range}` : ''}</SheetDescription>
             <span className={cn('tnum font-display font-bold', isIncome ? 'text-[#059669]' : 'text-rose-600')}>{formatBRL(total)}</span>
           </div>
         </SheetHeader>

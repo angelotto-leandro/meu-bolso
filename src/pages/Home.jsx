@@ -1,7 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useFinanceData } from '@/hooks/useFinanceData';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { fmtDate, formatBRL, monthLabel, dayLabel } from '@/lib/format';
+import { fmtDate, formatBRL, dayLabel, parseDate } from '@/lib/format';
+import { useBilling } from '@/hooks/useBilling';
+import { getPeriod, periodDays, currentPeriodMonth } from '@/lib/billing';
+import InvoiceStatus from '@/components/finance/InvoiceStatus';
+import InvoiceCloseDialog from '@/components/finance/InvoiceCloseDialog';
 import { supabase, unwrap } from '@/lib/supabase';
 import { cn } from '@/lib/utils';
 import SummaryHeader from '@/components/finance/SummaryHeader';
@@ -18,14 +22,23 @@ import { sourceMeta } from '@/components/finance/IncomeManager';
 import { Plus, ChevronLeft, ChevronRight, TrendingUp, TrendingDown, CalendarDays, Repeat, Banknote, X } from 'lucide-react';
 
 export default function Home() {
-  const [monthDate, setMonthDate] = useState(() => {
-    const d = new Date();
-    return new Date(d.getFullYear(), d.getMonth(), 1);
-  });
+  const billing = useBilling();
+  // Mês de referência: o mês do calendário, ou o mês em que a fatura fecha.
+  const [monthDate, setMonthDate] = useState(null);
+  useEffect(() => {
+    if (billing.loaded) setMonthDate(currentPeriodMonth(billing.closeDay, billing.overrides));
+    // Só quando carrega ou muda o dia de fechamento; ajustes de data não mudam a fatura que está na tela.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [billing.loaded, billing.closeDay]);
+  const period = useMemo(
+    () => (monthDate ? getPeriod(monthDate, billing.closeDay, billing.overrides) : null),
+    [monthDate, billing.closeDay, billing.overrides]
+  );
+  const [closeOpen, setCloseOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const isMobile = useIsMobile();
-  const { dailyExpenses, fixedExpenses, incomes, loading, error, reload } = useFinanceData(monthDate);
+  const { dailyExpenses, fixedExpenses, incomes, loading, error, reload } = useFinanceData(period, monthDate);
   const { categories, reloadCategories } = useCategories();
   const [menuOpen, setMenuOpen] = useState(false);
   const [statement, setStatement] = useState(null);
@@ -58,7 +71,7 @@ export default function Home() {
 
   const defaultEntryDate = selectedDate || fmtDate(new Date());
 
-  if (loading) {
+  if (loading || !period) {
     return (
       <div className="min-h-screen grid place-items-center bg-background">
         <div className="w-8 h-8 border-4 border-secondary border-t-[#059669] rounded-full animate-spin" />
@@ -77,6 +90,7 @@ export default function Home() {
     onSaved: reload,
     defaultDate: defaultEntryDate,
     monthDate,
+    periodLabel: period.label,
     fixedExpenses,
     incomes,
     customCategories: categories,
@@ -90,7 +104,8 @@ export default function Home() {
         dailyExpenses={dailyExpenses}
         fixedExpenses={fixedExpenses}
         incomes={incomes}
-        monthDate={monthDate}
+        periodLabel={period.label}
+        billing={billing}
         categories={categories}
         onCategoriesChanged={reloadCategories}
       />
@@ -98,11 +113,12 @@ export default function Home() {
         open={!!statement}
         onOpenChange={(o) => !o && setStatement(null)}
         type={statement}
-        monthDate={monthDate}
+        period={period}
         dailyExpenses={dailyExpenses}
         fixedExpenses={fixedExpenses}
         incomes={incomes}
       />
+      <InvoiceCloseDialog open={closeOpen} onOpenChange={setCloseOpen} monthDate={monthDate} billing={billing} />
     </>
   );
 
@@ -111,7 +127,8 @@ export default function Home() {
       <>
         {errorBanner}
         <MobileHome
-          monthDate={monthDate}
+          period={period}
+          onCloseInvoice={() => setCloseOpen(true)}
           onPrev={() => changeMonth(-1)}
           onNext={() => changeMonth(1)}
           receitas={receitas}
@@ -139,7 +156,8 @@ export default function Home() {
       {errorBanner}
       <div className="max-w-[1400px] mx-auto px-6 py-6 space-y-6">
         <SummaryHeader
-          monthDate={monthDate}
+          period={period}
+          onCloseInvoice={() => setCloseOpen(true)}
           onOpenMenu={() => setMenuOpen(true)}
           onOpenStatement={setStatement}
           onPrev={() => changeMonth(-1)}
@@ -151,7 +169,7 @@ export default function Home() {
         />
         <div className="grid grid-cols-1 lg:grid-cols-[65fr_35fr] gap-6 items-start">
           <div className="space-y-4 lg:min-w-0">
-            <CalendarMatrix monthDate={monthDate} dailyExpenses={dailyExpenses} selectedDate={selectedDate} onSelectDate={setSelectedDate} />
+            <CalendarMatrix days={periodDays(period)} dailyExpenses={dailyExpenses} selectedDate={selectedDate} onSelectDate={setSelectedDate} />
             <TransactionStream dailyExpenses={dailyExpenses} selectedDate={selectedDate} onClearFilter={() => setSelectedDate(null)} onDelete={deleteExpense} />
           </div>
           <div>
@@ -166,7 +184,7 @@ export default function Home() {
 
 function MobileHome(props) {
   const {
-    monthDate, onPrev, onNext,
+    period, onCloseInvoice, onPrev, onNext,
     receitas, despesasFixas, gastosDiarios, saldo,
     dailyExpenses, fixedExpenses, incomes,
     selectedDate, onSelectDate, onDelete, onNew, onOpenMenu, onOpenStatement,
@@ -179,9 +197,9 @@ function MobileHome(props) {
   const inPct = (totalIn / grand) * 100;
   const outPct = (totalOut / grand) * 100;
 
-  const year = monthDate.getFullYear();
-  const month = monthDate.getMonth();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const isInvoice = period.mode === 'invoice';
+  const days = periodDays(period);
+  const crossesMonth = days[0].slice(0, 7) !== days[days.length - 1].slice(0, 7);
   const todayStr = fmtDate(new Date());
   const spendByDay = {};
   dailyExpenses.forEach((e) => {
@@ -193,7 +211,7 @@ function MobileHome(props) {
     const el = stripRef.current?.querySelector('[data-today="true"]');
     if (el) stripRef.current.scrollLeft = el.offsetLeft - stripRef.current.clientWidth / 2 + el.clientWidth / 2;
     else if (stripRef.current) stripRef.current.scrollLeft = 0;
-  }, [monthDate]);
+  }, [period.start]);
 
   const sortedExpenses = [...dailyExpenses].sort((a, b) => (a.date < b.date ? 1 : -1));
   const filteredExpenses = selectedDate ? sortedExpenses.filter((e) => e.date === selectedDate) : sortedExpenses;
@@ -211,14 +229,15 @@ function MobileHome(props) {
             </div>
           </div>
           <div className="inline-flex items-center gap-1 rounded-full border border-border bg-card p-0.5">
-            <button onClick={onPrev} aria-label="Mês anterior" className="p-1.5 rounded-full text-muted-foreground"><ChevronLeft className="w-4 h-4" /></button>
-            <span className="px-2 text-xs font-semibold text-center min-w-[110px] text-foreground">{monthLabel(monthDate)}</span>
-            <button onClick={onNext} aria-label="Próximo mês" className="p-1.5 rounded-full text-muted-foreground"><ChevronRight className="w-4 h-4" /></button>
+            <button onClick={onPrev} aria-label="Período anterior" className="p-1.5 rounded-full text-muted-foreground"><ChevronLeft className="w-4 h-4" /></button>
+            <span className="px-2 text-xs font-semibold text-center min-w-[110px] text-foreground">{period.shortLabel}</span>
+            <button onClick={onNext} aria-label="Próximo período" className="p-1.5 rounded-full text-muted-foreground"><ChevronRight className="w-4 h-4" /></button>
           </div>
         </div>
 
         <div className="rounded-2xl border border-[#059669]/20 bg-card p-5 shadow-sm">
-          <p className="label-eyebrow text-muted-foreground mb-1">Saldo restante do mês</p>
+          <InvoiceStatus period={period} onClose={onCloseInvoice} className="mb-3" />
+          <p className="label-eyebrow text-muted-foreground mb-1">Saldo restante {isInvoice ? 'da fatura' : 'do mês'}</p>
           <p className={cn('font-display font-bold tnum tracking-tight', saldo < 0 ? 'text-rose-600' : 'text-foreground', 'text-[clamp(2rem,9vw,3rem)]')}>
             {formatBRL(saldo)}
           </p>
@@ -253,17 +272,19 @@ function MobileHome(props) {
       <div className="px-4 pt-4">
         <div className="flex items-center gap-1.5 mb-2 text-muted-foreground">
           <CalendarDays className="w-3.5 h-3.5" />
-          <span className="label-eyebrow">Dias do mês</span>
+          <span className="label-eyebrow">Dias {isInvoice ? 'da fatura' : 'do mês'}</span>
         </div>
         <div ref={stripRef} className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-none">
-          {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((d) => {
-            const ds = fmtDate(new Date(year, month, d));
+          {days.map((ds) => {
+            const date = parseDate(ds);
+            const d = date.getDate();
+            const showMonth = crossesMonth && (ds === days[0] || d === 1);
             const hasSpend = (spendByDay[ds] || 0) > 0;
             const isSelected = selectedDate === ds;
             const isToday = todayStr === ds;
             return (
               <button
-                key={d}
+                key={ds}
                 data-today={isToday}
                 onClick={() => onSelectDate(isSelected ? null : ds)}
                 className={cn(
@@ -271,7 +292,9 @@ function MobileHome(props) {
                   isSelected ? 'bg-[#059669] text-white border-[#059669]' : isToday ? 'border-[#059669]/40 bg-[#ECFDF5] text-[#059669]' : 'border-border bg-card text-foreground'
                 )}
               >
-                <span className="text-[10px] uppercase opacity-70">{new Date(year, month, d).toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '')}</span>
+                <span className="text-[10px] uppercase opacity-70">
+                  {showMonth ? date.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '') : date.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '')}
+                </span>
                 <span className="text-base font-bold tnum">{d}</span>
                 <span className={cn('w-1.5 h-1.5 rounded-full', hasSpend ? (isSelected ? 'bg-white' : 'bg-[#059669]') : 'bg-transparent')} />
               </button>
@@ -308,7 +331,7 @@ function MobileHome(props) {
       <div className="px-4 pt-4">
         <div className="flex items-center gap-1.5 mb-2 text-muted-foreground">
           <Banknote className="w-3.5 h-3.5" />
-          <span className="label-eyebrow">Receitas do mês</span>
+          <span className="label-eyebrow">Receitas {isInvoice ? 'da fatura' : 'do mês'}</span>
         </div>
         {incomes.length === 0 ? (
           <p className="text-xs text-muted-foreground py-2">Nenhuma receita lançada.</p>
