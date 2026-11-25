@@ -15,8 +15,8 @@ Em **Authentication**:
 
 - **Sign In / Providers → Email**: recomendo **desligar "Confirm email"**. O e-mail grátis do Supabase só envia poucos e-mails por hora, e com a confirmação ligada a família pode ficar travada no cadastro. Com ela desligada, a pessoa cria a conta e já entra.
 - **URL Configuration**:
-  - **Site URL**: o endereço do app (ex.: `https://SEU-USUARIO.github.io/meu-bolso/`)
-  - **Redirect URLs**: adicione `https://SEU-USUARIO.github.io/meu-bolso/**`
+  - **Site URL**: o endereço do app (ex.: `https://meubolso.vercel.app/`)
+  - **Redirect URLs**: adicione `https://meubolso.vercel.app/**`
 
 ### Pegar as chaves
 Em **Project Settings → API Keys** (ou **Data API**), copie:
@@ -25,7 +25,15 @@ Em **Project Settings → API Keys** (ou **Data API**), copie:
 
 ---
 
-## Passo 2 · Publicar no GitHub Pages
+## Passo 2 · Publicar
+
+### Vercel (endereço atual: https://meubolso.vercel.app)
+1. Em [vercel.com](https://vercel.com), entre com o GitHub (plano Hobby, grátis).
+2. **Add New → Project** → importe o repositório `meu-bolso`.
+3. Nome do projeto: `meubolso`. O resto já vem certo (o arquivo [`vercel.json`](vercel.json) configura tudo). Clique em **Deploy**.
+4. Cada push na `main` publica de novo sozinho.
+
+### GitHub Pages (alternativa)
 
 1. Crie um repositório no GitHub chamado `meu-bolso` e envie este código para ele.
 2. No repositório: **Settings → Pages → Source: GitHub Actions**.
