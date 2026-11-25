@@ -101,6 +101,7 @@ export default function Home() {
     paidMap,
     togglePaid,
     onEdit: setEditing,
+    billing,
   };
 
   const shared = (
