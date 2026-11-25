@@ -22,7 +22,7 @@ function CopyField({ label, value, secret }) {
       <div className="flex items-stretch gap-1.5">
         <code className={cn('flex-1 min-w-0 rounded-lg border border-border bg-card px-2.5 py-2 text-[11px] break-all', secret && 'font-semibold text-foreground')}>{value}</code>
         <Button type="button" variant="outline" size="icon" onClick={copy} className="shrink-0 h-auto w-10" aria-label={`Copiar ${label}`}>
-          {copied ? <Check className="text-[#059669]" /> : <Copy />}
+          {copied ? <Check className="text-brand" /> : <Copy />}
         </Button>
       </div>
     </div>
@@ -33,7 +33,7 @@ function Part({ n, title, children }) {
   return (
     <section className="rounded-xl border border-border bg-card p-4 space-y-3">
       <div className="flex items-center gap-2">
-        <span className="label-eyebrow text-[#059669]">Parte {n}</span>
+        <span className="label-eyebrow text-brand">Parte {n}</span>
         <span className="font-display font-semibold text-sm text-foreground">{title}</span>
       </div>
       <ol className="space-y-3">{children}</ol>
@@ -44,7 +44,7 @@ function Part({ n, title, children }) {
 function Step({ n, title, children }) {
   return (
     <li className="flex gap-3">
-      <span className="w-6 h-6 rounded-full bg-[#059669] text-white text-xs font-bold grid place-items-center shrink-0 mt-0.5">{n}</span>
+      <span className="w-6 h-6 rounded-full bg-brand text-on-brand text-xs font-bold grid place-items-center shrink-0 mt-0.5">{n}</span>
       <div className="min-w-0 flex-1 space-y-1.5">
         <p className="text-sm font-semibold text-foreground">{title}</p>
         <div className="text-[13px] text-muted-foreground space-y-1.5">{children}</div>
@@ -93,9 +93,9 @@ export default function ShortcutSheet({ open, onOpenChange }) {
 
         <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-secondary/30">
           {/* O que você vai copiar */}
-          <div className="rounded-xl border border-[#059669]/25 bg-[#ECFDF5] p-4 space-y-3">
+          <div className="rounded-xl border border-brand/25 bg-brand-soft p-4 space-y-3">
             <div className="flex items-center gap-2">
-              <KeyRound className="w-4 h-4 text-[#059669]" />
+              <KeyRound className="w-4 h-4 text-brand" />
               <p className="font-display font-semibold text-sm text-foreground">Você vai precisar destas 3 coisas</p>
             </div>
             <p className="text-[12px] text-muted-foreground">Toque no botão de copiar ao lado de cada uma quando o passo pedir.</p>
@@ -103,7 +103,7 @@ export default function ShortcutSheet({ open, onOpenChange }) {
             {token ? (
               <>
                 <CopyField label="1 · Seu código (aparece só agora)" value={token} secret />
-                <p className="flex gap-1.5 text-[12px] text-amber-700">
+                <p className="flex gap-1.5 text-[12px] text-warning">
                   <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
                   Deixe esta tela aberta até terminar o atalho: por segurança o código não aparece de novo. Não envie para outras pessoas.
                 </p>
@@ -116,7 +116,7 @@ export default function ShortcutSheet({ open, onOpenChange }) {
                     ? 'Você já gerou um código antes. Se perdeu ou vai montar o atalho de novo, gere outro (o anterior para de funcionar).'
                     : 'Gere o código que liga o atalho à sua conta.'}
                 </p>
-                <Button onClick={generate} disabled={busy || hasToken === null} className="w-full bg-[#059669] hover:bg-[#047857]">
+                <Button onClick={generate} disabled={busy || hasToken === null} className="w-full bg-brand hover:bg-brand-strong">
                   {busy && <Loader2 className="animate-spin" />} {hasToken ? 'Gerar novo código' : 'Gerar meu código'}
                 </Button>
                 {error && <p className="text-xs text-destructive">{error}</p>}

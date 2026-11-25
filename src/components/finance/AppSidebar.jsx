@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, Trash2, Tags, PieChart, Loader2, UserCircle2, LogOut, Users, Smartphone, ChevronRight, CreditCard } from 'lucide-react';
 import AdminUsersPanel from '@/components/finance/AdminUsersPanel';
 import ChartsPanel from '@/components/finance/ChartsPanel';
+import ThemePicker from '@/components/ThemePicker';
 import ShortcutSheet from '@/components/finance/ShortcutSheet';
 import BillingSheet from '@/components/finance/BillingSheet';
 
@@ -58,7 +59,7 @@ export default function AppSidebar({ open, onOpenChange, dailyExpenses, fixedExp
         <SheetContent side="left" className="w-[300px] sm:max-w-sm p-0 flex flex-col">
           <SheetHeader className="p-4 pb-3 border-b border-border text-left space-y-0">
             <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-xl bg-[#059669] text-white grid place-items-center font-display font-bold text-lg shrink-0">B</div>
+              <div className="w-10 h-10 rounded-xl bg-brand text-on-brand grid place-items-center font-display font-bold text-lg shrink-0">B</div>
               <div className="min-w-0">
                 <SheetTitle className="text-base font-display">Meu Bolso</SheetTitle>
                 <SheetDescription asChild>
@@ -74,9 +75,9 @@ export default function AppSidebar({ open, onOpenChange, dailyExpenses, fixedExp
           <div className="p-4 space-y-4 flex-1 overflow-y-auto">
             <button
               onClick={() => setShortcutOpen(true)}
-              className="w-full flex items-center gap-3 rounded-xl border border-[#059669]/25 bg-[#ECFDF5] p-3 text-left hover:border-[#059669]/50 transition-colors"
+              className="w-full flex items-center gap-3 rounded-xl border border-brand/25 bg-brand-soft p-3 text-left hover:border-brand/50 transition-colors"
             >
-              <span className="w-9 h-9 rounded-lg bg-[#059669] text-white grid place-items-center shrink-0"><Smartphone className="w-4 h-4" /></span>
+              <span className="w-9 h-9 rounded-lg bg-brand text-on-brand grid place-items-center shrink-0"><Smartphone className="w-4 h-4" /></span>
               <span className="min-w-0 flex-1">
                 <span className="block text-sm font-semibold text-foreground">Atalho do iPhone</span>
                 <span className="block text-[11px] text-muted-foreground">Gasto ou ganho com dois toques</span>
@@ -86,7 +87,7 @@ export default function AppSidebar({ open, onOpenChange, dailyExpenses, fixedExp
 
             <button
               onClick={() => setBillingOpen(true)}
-              className="w-full flex items-center gap-3 rounded-xl border border-border bg-card p-3 text-left hover:border-[#059669]/40 transition-colors"
+              className="w-full flex items-center gap-3 rounded-xl border border-border bg-card p-3 text-left hover:border-brand/40 transition-colors"
             >
               <span className="w-9 h-9 rounded-lg bg-[#8B5CF6]/10 text-[#8B5CF6] grid place-items-center shrink-0"><CreditCard className="w-4 h-4" /></span>
               <span className="min-w-0 flex-1">
@@ -129,7 +130,7 @@ export default function AppSidebar({ open, onOpenChange, dailyExpenses, fixedExp
                     {categories.map((c) => (
                       <div key={c.id} className="flex items-center justify-between gap-2 py-2 border-b border-border last:border-0">
                         <span className="text-sm font-medium text-foreground truncate">{c.name}</span>
-                        <button onClick={() => removeCategory(c.id)} className="text-muted-foreground hover:text-rose-500 transition-colors shrink-0 p-1" aria-label={`Excluir ${c.name}`}>
+                        <button onClick={() => removeCategory(c.id)} className="text-muted-foreground hover:text-expense transition-colors shrink-0 p-1" aria-label={`Excluir ${c.name}`}>
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>
@@ -138,7 +139,7 @@ export default function AppSidebar({ open, onOpenChange, dailyExpenses, fixedExp
                 </div>
                 <form onSubmit={addCategory} className="flex gap-2">
                   <Input placeholder="Nova categoria" value={newName} onChange={(e) => setNewName(e.target.value)} className="h-9" maxLength={60} />
-                  <Button type="submit" size="icon" disabled={saving || !newName.trim()} className="h-9 w-9 shrink-0 bg-[#059669] hover:bg-[#047857]" aria-label="Adicionar categoria">
+                  <Button type="submit" size="icon" disabled={saving || !newName.trim()} className="h-9 w-9 shrink-0 bg-brand hover:bg-brand-strong" aria-label="Adicionar categoria">
                     {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
                   </Button>
                 </form>
@@ -151,8 +152,9 @@ export default function AppSidebar({ open, onOpenChange, dailyExpenses, fixedExp
             )}
           </div>
 
-          <div className="p-4 border-t border-border shrink-0">
-            <Button variant="outline" onClick={() => logout()} className="w-full text-rose-600 hover:text-rose-700 hover:bg-rose-50 hover:border-rose-200">
+          <div className="p-4 border-t border-border shrink-0 space-y-3">
+            <ThemePicker />
+            <Button variant="outline" onClick={() => logout()} className="w-full text-expense hover:text-expense/80 hover:bg-expense-soft hover:border-expense-border">
               <LogOut className="w-4 h-4" /> Sair da conta
             </Button>
           </div>

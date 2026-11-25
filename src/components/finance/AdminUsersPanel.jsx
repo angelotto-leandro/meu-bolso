@@ -12,7 +12,7 @@ function Section({ title, total, income, count, children }) {
     <div>
       <div className="flex items-center justify-between mb-2">
         <p className="label-eyebrow text-muted-foreground">{title}</p>
-        <span className={cn('tnum text-xs font-semibold', income ? 'text-[#059669]' : 'text-rose-600')}>{formatBRL(total)}</span>
+        <span className={cn('tnum text-xs font-semibold', income ? 'text-brand' : 'text-expense')}>{formatBRL(total)}</span>
       </div>
       {count === 0 ? <p className="text-xs text-muted-foreground">Nenhum registro.</p> : <div className="space-y-1.5">{children}</div>}
     </div>
@@ -61,7 +61,7 @@ export default function AdminUsersPanel() {
 
         {!data ? (
           <div className="py-10 grid place-items-center">
-            <Loader2 className="w-5 h-5 animate-spin text-[#059669]" />
+            <Loader2 className="w-5 h-5 animate-spin text-brand" />
           </div>
         ) : (
           <>
@@ -77,7 +77,7 @@ export default function AdminUsersPanel() {
                         <p className="text-[11px] text-muted-foreground">{dayLabel(e.date)}</p>
                       </div>
                     </div>
-                    <span className="tnum text-xs font-semibold text-[#059669] shrink-0">+ {formatBRL(e.amount)}</span>
+                    <span className="tnum text-xs font-semibold text-brand shrink-0">+ {formatBRL(e.amount)}</span>
                   </div>
                 );
               })}
@@ -93,7 +93,7 @@ export default function AdminUsersPanel() {
                       <p className="text-[11px] text-muted-foreground">Todo dia {e.due_day} · {fixedPeriodLabel(e)}</p>
                     </div>
                   </div>
-                  <span className="tnum text-xs font-semibold text-rose-600 shrink-0">- {formatBRL(e.amount)}</span>
+                  <span className="tnum text-xs font-semibold text-expense shrink-0">- {formatBRL(e.amount)}</span>
                 </div>
               ))}
             </Section>
@@ -108,7 +108,7 @@ export default function AdminUsersPanel() {
                       <p className="text-[11px] text-muted-foreground">{dayLabel(e.date)}{e.category && e.description ? ` · ${e.category}` : ''}</p>
                     </div>
                   </div>
-                  <span className="tnum text-xs font-semibold text-rose-600 shrink-0">- {formatBRL(e.amount)}</span>
+                  <span className="tnum text-xs font-semibold text-expense shrink-0">- {formatBRL(e.amount)}</span>
                 </div>
               ))}
             </Section>
@@ -122,7 +122,7 @@ export default function AdminUsersPanel() {
     <div>
       {!users ? (
         <div className="py-10 grid place-items-center">
-          <Loader2 className="w-5 h-5 animate-spin text-[#059669]" />
+          <Loader2 className="w-5 h-5 animate-spin text-brand" />
         </div>
       ) : users.length === 0 ? (
         <p className="text-xs text-muted-foreground py-2">Nenhum usuário encontrado.</p>
@@ -131,7 +131,7 @@ export default function AdminUsersPanel() {
           {users.map((u) => (
             <button key={u.id} onClick={() => setSelected(u)} className="w-full flex items-center justify-between gap-2 py-2.5 px-2 rounded-lg hover:bg-secondary text-left transition-colors">
               <span className="text-sm text-foreground truncate">{u.email}</span>
-              <span className={cn('px-2 py-0.5 rounded-full text-[10px] font-semibold shrink-0', u.role === 'admin' ? 'bg-[#059669]/10 text-[#059669]' : 'bg-secondary text-muted-foreground')}>
+              <span className={cn('px-2 py-0.5 rounded-full text-[10px] font-semibold shrink-0', u.role === 'admin' ? 'bg-brand/10 text-brand' : 'bg-secondary text-muted-foreground')}>
                 {u.role === 'admin' ? 'Admin' : 'Usuário'}
               </span>
             </button>

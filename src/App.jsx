@@ -11,7 +11,7 @@ import ResetPassword from '@/pages/ResetPassword';
 function Spinner() {
   return (
     <div className="min-h-screen grid place-items-center bg-background">
-      <div className="w-8 h-8 border-4 border-secondary border-t-[#059669] rounded-full animate-spin" />
+      <div className="w-8 h-8 border-4 border-secondary border-t-brand rounded-full animate-spin" />
     </div>
   );
 }

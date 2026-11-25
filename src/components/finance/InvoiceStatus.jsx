@@ -6,7 +6,7 @@ import { Lock, LockOpen, CalendarClock } from 'lucide-react';
 export default function InvoiceStatus({ period, onClose, className }) {
   if (!period || period.mode !== 'invoice') return null;
   const meta = {
-    aberta: { text: 'Aberta', icon: LockOpen, cls: 'bg-[#059669]/10 text-[#059669]' },
+    aberta: { text: 'Aberta', icon: LockOpen, cls: 'bg-brand/10 text-brand' },
     fechada: { text: 'Fechada', icon: Lock, cls: 'bg-secondary text-muted-foreground' },
     futura: { text: 'Futura', icon: CalendarClock, cls: 'bg-secondary text-muted-foreground' },
   }[period.status];
@@ -19,7 +19,7 @@ export default function InvoiceStatus({ period, onClose, className }) {
         <span className="tnum">{period.range}</span>
       </div>
       {period.status !== 'futura' && (
-        <button onClick={onClose} className="text-xs font-semibold text-[#059669] hover:underline">
+        <button onClick={onClose} className="text-xs font-semibold text-brand hover:underline">
           {period.status === 'aberta' ? 'Fechar fatura' : `Fechou ${period.closeLabel} · alterar`}
         </button>
       )}

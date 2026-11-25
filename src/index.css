@@ -4,13 +4,14 @@
 
 @layer base {
   :root {
+    color-scheme: light;
     --background: 210 40% 98%;
     --foreground: 222 47% 11%;
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
-    --primary: 158 94% 40%;
+    --primary: 160 100% 33%;
     --primary-foreground: 0 0% 100%;
     --secondary: 210 40% 96%;
     --secondary-foreground: 222 47% 11%;
@@ -22,8 +23,8 @@
     --destructive-foreground: 0 0% 100%;
     --border: 213 27% 88%;
     --input: 213 27% 88%;
-    --ring: 158 94% 40%;
-    --chart-1: 158 94% 40%;
+    --ring: 160 100% 33%;
+    --chart-1: 160 100% 33%;
     --chart-2: 199 89% 48%;
     --chart-3: 262 83% 58%;
     --chart-4: 38 92% 50%;
@@ -33,6 +34,50 @@
     --font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
     --font-display: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+    /* Cores do app (R G B) */
+    --brand: 0 168 112;          /* verde Esmeralda vivo #00A870 */
+    --brand-strong: 0 140 94;    /* verde ao passar o dedo/mouse */
+    --brand-soft: 230 250 242;   /* fundo verde bem clarinho */
+    --on-brand: 255 255 255;     /* texto em cima do verde */
+    --expense: 225 29 72;        /* vermelho dos gastos #E11D48 */
+    --expense-soft: 255 241 242;
+    --expense-border: 254 205 211;
+    --warning: 180 83 9;
+  }
+
+  /* Modo escuro: preto total + verde Esmeralda vivo */
+  .dark {
+    color-scheme: dark;
+    --background: 0 0% 0%;
+    --foreground: 240 5% 96%;
+    --card: 240 6% 7%;
+    --card-foreground: 240 5% 96%;
+    --popover: 240 6% 7%;
+    --popover-foreground: 240 5% 96%;
+    --primary: 160 100% 42%;
+    --primary-foreground: 156 74% 5%;
+    --secondary: 240 5% 11%;
+    --secondary-foreground: 240 5% 96%;
+    --muted: 240 5% 11%;
+    --muted-foreground: 240 5% 65%;
+    --accent: 240 5% 13%;
+    --accent-foreground: 240 5% 96%;
+    --destructive: 351 95% 71%;
+    --destructive-foreground: 0 0% 0%;
+    --border: 240 5% 16%;
+    --input: 240 5% 20%;
+    --ring: 160 100% 42%;
+    --chart-1: 160 100% 42%;
+
+    --brand: 0 214 143;          /* #00D68F */
+    --brand-strong: 0 188 126;
+    --brand-soft: 4 38 27;
+    --on-brand: 3 20 13;         /* texto quase preto no verde vivo */
+    --expense: 251 113 133;      /* #FB7185 */
+    --expense-soft: 40 10 16;
+    --expense-border: 90 22 36;
+    --warning: 251 191 36;
   }
 }
 

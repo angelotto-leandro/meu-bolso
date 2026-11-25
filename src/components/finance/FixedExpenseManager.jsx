@@ -45,7 +45,7 @@ function RemoveFixedDialog({ expense, monthDate, periodLabel, onDone }) {
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
-        <button className="text-muted-foreground hover:text-rose-500 transition-colors p-1" aria-label={`Remover ${expense.name}`}>
+        <button className="text-muted-foreground hover:text-expense transition-colors p-1" aria-label={`Remover ${expense.name}`}>
           <Trash2 className="w-3.5 h-3.5" />
         </button>
       </AlertDialogTrigger>
@@ -59,12 +59,12 @@ function RemoveFixedDialog({ expense, monthDate, periodLabel, onDone }) {
         {error && <p className="text-sm text-destructive">{error}</p>}
         <div className="flex flex-col gap-2">
           {canEnd && (
-            <Button onClick={() => run('end')} disabled={!!busy} className="h-auto py-2.5 flex-col items-start gap-0.5 bg-[#059669] hover:bg-[#047857] whitespace-normal text-left">
+            <Button onClick={() => run('end')} disabled={!!busy} className="h-auto py-2.5 flex-col items-start gap-0.5 bg-brand hover:bg-brand-strong whitespace-normal text-left">
               <span className="flex items-center gap-2">{busy === 'end' && <Loader2 className="animate-spin" />}Encerrar em {periodLabel || monthLabel(monthDate)}</span>
               <span className="text-[11px] font-normal opacity-90">Conta até aqui e some a partir do próximo período.</span>
             </Button>
           )}
-          <Button variant="outline" onClick={() => run('delete')} disabled={!!busy} className="h-auto py-2.5 flex-col items-start gap-0.5 text-rose-600 hover:text-rose-700 whitespace-normal text-left">
+          <Button variant="outline" onClick={() => run('delete')} disabled={!!busy} className="h-auto py-2.5 flex-col items-start gap-0.5 text-expense hover:text-expense/80 whitespace-normal text-left">
             <span className="flex items-center gap-2">{busy === 'delete' && <Loader2 className="animate-spin" />}Excluir de vez</span>
             <span className="text-[11px] font-normal text-muted-foreground">Some de todos os meses. Use se foi cadastrado por engano.</span>
           </Button>
@@ -155,7 +155,7 @@ export default function FixedExpenseManager({ fixedExpenses, onSaved, monthDate,
           <p className="text-[11px] text-muted-foreground mb-1">Categoria (opcional)</p>
           <div className="flex gap-1.5 flex-wrap">
             {allCategories.map((c) => (
-              <button type="button" key={c} onClick={() => setCategory(category === c ? '' : c)} className={cn('px-2 py-0.5 rounded-full text-[11px] border transition-colors', category === c ? 'bg-[#059669] text-white border-[#059669]' : 'border-border text-muted-foreground hover:text-foreground')}>
+              <button type="button" key={c} onClick={() => setCategory(category === c ? '' : c)} className={cn('px-2 py-0.5 rounded-full text-[11px] border transition-colors', category === c ? 'bg-brand text-on-brand border-brand' : 'border-border text-muted-foreground hover:text-foreground')}>
                 {c}
               </button>
             ))}
@@ -170,7 +170,7 @@ export default function FixedExpenseManager({ fixedExpenses, onSaved, monthDate,
         </div>
         <p className="text-[11px] text-muted-foreground">Passa a contar a partir de <span>{periodLabel || monthLabel(monthDate)}</span>.</p>
         {error && <p className="text-xs text-destructive">{error}</p>}
-        <Button type="submit" disabled={saving || !valid} className="w-full h-9 bg-[#059669] hover:bg-[#047857]">
+        <Button type="submit" disabled={saving || !valid} className="w-full h-9 bg-brand hover:bg-brand-strong">
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Plus className="w-4 h-4" /> Adicionar fixo</>}
         </Button>
       </form>

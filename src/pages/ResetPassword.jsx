@@ -34,7 +34,7 @@ export default function ResetPassword() {
   if (isLoadingAuth) {
     return (
       <div className="min-h-screen grid place-items-center bg-background">
-        <Loader2 className="w-6 h-6 animate-spin text-[#059669]" />
+        <Loader2 className="w-6 h-6 animate-spin text-brand" />
       </div>
     );
   }

@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import { Trash2, Plus, Loader2 } from 'lucide-react';
 
 const SOURCES = [
-  { key: 'salario', label: 'Salário', color: 'bg-[#059669] text-white' },
+  { key: 'salario', label: 'Salário', color: 'bg-brand text-on-brand' },
   { key: 'vale', label: 'Vale', color: 'bg-[#06B6D4] text-white' },
   { key: 'freelancer', label: 'Freelancer', color: 'bg-[#8B5CF6] text-white' },
   { key: 'presente', label: 'Presente', color: 'bg-[#F59E0B] text-white' },
@@ -58,7 +58,7 @@ export default function IncomeManager({ incomes, onSaved, defaultDate }) {
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <h4 className="font-display font-semibold text-foreground text-sm">Receitas</h4>
-        <span className="tnum text-xs text-[#059669] font-medium">{formatBRL(total)}</span>
+        <span className="tnum text-xs text-brand font-medium">{formatBRL(total)}</span>
       </div>
       <div className="space-y-1">
         {incomes.length === 0 && <p className="text-xs text-muted-foreground py-1">Nenhuma receita lançada neste período.</p>}
@@ -74,9 +74,9 @@ export default function IncomeManager({ incomes, onSaved, defaultDate }) {
                 </div>
               </div>
               <div className="flex items-center gap-1 shrink-0">
-                <span className="tnum text-sm font-semibold text-[#059669]">{formatBRL(e.amount)}</span>
+                <span className="tnum text-sm font-semibold text-brand">{formatBRL(e.amount)}</span>
                 <ConfirmDelete title="Excluir esta receita?" onConfirm={() => remove(e.id)}>
-                  <button className="text-muted-foreground hover:text-rose-500 transition-colors p-1" aria-label="Excluir receita"><Trash2 className="w-3.5 h-3.5" /></button>
+                  <button className="text-muted-foreground hover:text-expense transition-colors p-1" aria-label="Excluir receita"><Trash2 className="w-3.5 h-3.5" /></button>
                 </ConfirmDelete>
               </div>
             </div>
@@ -97,7 +97,7 @@ export default function IncomeManager({ incomes, onSaved, defaultDate }) {
         </div>
         <Input placeholder="Descrição (opcional)" value={description} onChange={(e) => setDescription(e.target.value)} className="h-9" />
         {error && <p className="text-xs text-destructive">{error}</p>}
-        <Button type="submit" disabled={saving || !valid} className="w-full h-9 bg-[#059669] hover:bg-[#047857]">
+        <Button type="submit" disabled={saving || !valid} className="w-full h-9 bg-brand hover:bg-brand-strong">
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Plus className="w-4 h-4" /> Adicionar receita</>}
         </Button>
       </form>

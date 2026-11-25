@@ -36,7 +36,7 @@ export default function StatementSheet({ open, onOpenChange, type, period, daily
           <SheetTitle className="text-base font-display">{meta.title}</SheetTitle>
           <div className="flex items-center justify-between">
             <SheetDescription className="text-xs">{period.label}{period.range ? ` · ${period.range}` : ''}</SheetDescription>
-            <span className={cn('tnum font-display font-bold', isIncome ? 'text-[#059669]' : 'text-rose-600')}>{formatBRL(total)}</span>
+            <span className={cn('tnum font-display font-bold', isIncome ? 'text-brand' : 'text-expense')}>{formatBRL(total)}</span>
           </div>
         </SheetHeader>
         <div className="flex-1 overflow-y-auto p-4 space-y-2">
@@ -56,7 +56,7 @@ export default function StatementSheet({ open, onOpenChange, type, period, daily
                     {type !== 'receitas' && e.category && (e.description || e.name) ? ` · ${e.category}` : ''}
                   </p>
                 </div>
-                <span className={cn('tnum text-sm font-semibold shrink-0', isIncome ? 'text-[#059669]' : 'text-rose-600')}>
+                <span className={cn('tnum text-sm font-semibold shrink-0', isIncome ? 'text-brand' : 'text-expense')}>
                   {isIncome ? '+' : '-'} {formatBRL(e.amount)}
                 </span>
               </div>

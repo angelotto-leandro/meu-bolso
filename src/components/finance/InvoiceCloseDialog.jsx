@@ -83,7 +83,7 @@ export default function InvoiceCloseDialog({ open, onOpenChange, monthDate, bill
             </Button>
           )}
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <Button onClick={save} disabled={!!busy} className="bg-[#059669] hover:bg-[#047857]">
+          <Button onClick={save} disabled={!!busy} className="bg-brand hover:bg-brand-strong">
             {busy === 'save' && <Loader2 className="animate-spin" />} {isOpenInvoice ? 'Fechar fatura' : 'Salvar'}
           </Button>
         </AlertDialogFooter>

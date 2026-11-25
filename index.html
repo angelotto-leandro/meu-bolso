@@ -3,7 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#059669" />
+    <meta name="theme-color" content="#F8FAFC" />
+    <script>
+      // Aplica o tema antes de desenhar a tela (evita piscar branco no modo escuro)
+      (function () {
+        var p = 'auto';
+        try { p = localStorage.getItem('meu-bolso-tema') || 'auto'; } catch (e) {}
+        var dark = p === 'dark' || (p !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        if (dark) document.documentElement.classList.add('dark');
+        document.querySelector('meta[name="theme-color"]').setAttribute('content', dark ? '#000000' : '#F8FAFC');
+      })();
+    </script>
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />

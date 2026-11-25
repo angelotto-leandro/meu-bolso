@@ -2,10 +2,10 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 
 export const PAYMENT_METHODS = {
-  debito: { label: 'Débito', dot: 'bg-[#3B82F6]', text: 'text-[#3B82F6]', bg: 'bg-[#3B82F6]/10', ring: 'ring-[#3B82F6]/25' },
-  credito: { label: 'Crédito', dot: 'bg-[#8B5CF6]', text: 'text-[#8B5CF6]', bg: 'bg-[#8B5CF6]/10', ring: 'ring-[#8B5CF6]/25' },
-  pix: { label: 'Pix', dot: 'bg-[#06B6D4]', text: 'text-[#06B6D4]', bg: 'bg-[#06B6D4]/10', ring: 'ring-[#06B6D4]/25' },
-  dinheiro: { label: 'Dinheiro', dot: 'bg-[#F59E0B]', text: 'text-[#F59E0B]', bg: 'bg-[#F59E0B]/10', ring: 'ring-[#F59E0B]/25' },
+  debito: { label: 'Débito', dot: 'bg-[#3B82F6]', text: 'text-[#3B82F6] dark:text-[#60A5FA]', bg: 'bg-[#3B82F6]/10', ring: 'ring-[#3B82F6]/25' },
+  credito: { label: 'Crédito', dot: 'bg-[#8B5CF6]', text: 'text-[#8B5CF6] dark:text-[#A78BFA]', bg: 'bg-[#8B5CF6]/10', ring: 'ring-[#8B5CF6]/25' },
+  pix: { label: 'Pix', dot: 'bg-[#06B6D4]', text: 'text-[#0891B2] dark:text-[#22D3EE]', bg: 'bg-[#06B6D4]/10', ring: 'ring-[#06B6D4]/25' },
+  dinheiro: { label: 'Dinheiro', dot: 'bg-[#F59E0B]', text: 'text-[#D97706] dark:text-[#FBBF24]', bg: 'bg-[#F59E0B]/10', ring: 'ring-[#F59E0B]/25' },
 };
 
 export const PAYMENT_ORDER = ['debito', 'credito', 'pix', 'dinheiro'];

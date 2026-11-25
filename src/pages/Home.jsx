@@ -74,7 +74,7 @@ export default function Home() {
   if (loading || !period) {
     return (
       <div className="min-h-screen grid place-items-center bg-background">
-        <div className="w-8 h-8 border-4 border-secondary border-t-[#059669] rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-secondary border-t-brand rounded-full animate-spin" />
       </div>
     );
   }
@@ -219,10 +219,10 @@ function MobileHome(props) {
   return (
     <div className="min-h-screen bg-background pb-28">
       {/* Topo */}
-      <div className="px-4 pt-5 pb-3 bg-gradient-to-b from-[#ECFDF5] to-background">
+      <div className="px-4 pt-5 pb-3 bg-gradient-to-b from-brand-soft to-background">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <button onClick={onOpenMenu} aria-label="Abrir menu" className="w-9 h-9 rounded-xl bg-[#059669] text-white grid place-items-center font-display font-bold active:scale-95 transition-transform">B</button>
+            <button onClick={onOpenMenu} aria-label="Abrir menu" className="w-9 h-9 rounded-xl bg-brand text-on-brand grid place-items-center font-display font-bold active:scale-95 transition-transform">B</button>
             <div>
               <p className="label-eyebrow text-muted-foreground">Meu Bolso</p>
               <p className="font-display font-bold text-sm text-foreground leading-none">Controle de Gastos</p>
@@ -235,29 +235,29 @@ function MobileHome(props) {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-[#059669]/20 bg-card p-5 shadow-sm">
+        <div className="rounded-2xl border border-brand/20 bg-card p-5 shadow-sm">
           <InvoiceStatus period={period} onClose={onCloseInvoice} className="mb-3" />
           <p className="label-eyebrow text-muted-foreground mb-1">Saldo restante {isInvoice ? 'da fatura' : 'do mês'}</p>
-          <p className={cn('font-display font-bold tnum tracking-tight', saldo < 0 ? 'text-rose-600' : 'text-foreground', 'text-[clamp(2rem,9vw,3rem)]')}>
+          <p className={cn('font-display font-bold tnum tracking-tight', saldo < 0 ? 'text-expense' : 'text-foreground', 'text-[clamp(2rem,9vw,3rem)]')}>
             {formatBRL(saldo)}
           </p>
           <div className="mt-4 space-y-2.5">
             <div>
               <button className="w-full flex items-center justify-between text-xs mb-1" onClick={() => onOpenStatement('receitas')}>
-                <span className="inline-flex items-center gap-1 text-[#059669] font-medium"><TrendingUp className="w-3 h-3" /> Receitas</span>
+                <span className="inline-flex items-center gap-1 text-brand font-medium"><TrendingUp className="w-3 h-3" /> Receitas</span>
                 <span className="tnum text-foreground font-medium">{formatBRL(receitas)}</span>
               </button>
               <div className="h-2 rounded-full bg-secondary overflow-hidden">
-                <div className="h-full bg-[#059669] rounded-full" style={{ width: `${inPct}%` }} />
+                <div className="h-full bg-brand rounded-full" style={{ width: `${inPct}%` }} />
               </div>
             </div>
             <div>
               <div className="flex items-center justify-between text-xs mb-1">
-                <span className="inline-flex items-center gap-1 text-rose-500 font-medium"><TrendingDown className="w-3 h-3" /> Despesas</span>
+                <span className="inline-flex items-center gap-1 text-expense font-medium"><TrendingDown className="w-3 h-3" /> Despesas</span>
                 <span className="tnum text-foreground font-medium">{formatBRL(totalExpense)}</span>
               </div>
               <div className="h-2 rounded-full bg-secondary overflow-hidden">
-                <div className="h-full bg-rose-400 rounded-full" style={{ width: `${outPct}%` }} />
+                <div className="h-full bg-expense rounded-full" style={{ width: `${outPct}%` }} />
               </div>
               <div className="flex gap-3 mt-1.5 text-[11px] text-muted-foreground">
                 <button onClick={() => onOpenStatement('fixas')}>Fixas: <span className="tnum text-foreground">{formatBRL(despesasFixas)}</span></button>
@@ -289,14 +289,14 @@ function MobileHome(props) {
                 onClick={() => onSelectDate(isSelected ? null : ds)}
                 className={cn(
                   'shrink-0 w-12 h-16 rounded-xl border flex flex-col items-center justify-center gap-1 transition-colors',
-                  isSelected ? 'bg-[#059669] text-white border-[#059669]' : isToday ? 'border-[#059669]/40 bg-[#ECFDF5] text-[#059669]' : 'border-border bg-card text-foreground'
+                  isSelected ? 'bg-brand text-on-brand border-brand' : isToday ? 'border-brand/40 bg-brand-soft text-brand' : 'border-border bg-card text-foreground'
                 )}
               >
                 <span className="text-[10px] uppercase opacity-70">
                   {showMonth ? date.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '') : date.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '')}
                 </span>
                 <span className="text-base font-bold tnum">{d}</span>
-                <span className={cn('w-1.5 h-1.5 rounded-full', hasSpend ? (isSelected ? 'bg-white' : 'bg-[#059669]') : 'bg-transparent')} />
+                <span className={cn('w-1.5 h-1.5 rounded-full', hasSpend ? (isSelected ? 'bg-on-brand' : 'bg-brand') : 'bg-transparent')} />
               </button>
             );
           })}
@@ -348,7 +348,7 @@ function MobileHome(props) {
                       <p className="text-xs text-muted-foreground">{dayLabel(e.date)}</p>
                     </div>
                   </div>
-                  <span className="tnum text-sm font-semibold text-[#059669] shrink-0">{formatBRL(e.amount)}</span>
+                  <span className="tnum text-sm font-semibold text-brand shrink-0">{formatBRL(e.amount)}</span>
                 </div>
               );
             })}
@@ -380,13 +380,13 @@ function MobileHome(props) {
                 <p className="text-xs text-muted-foreground mt-0.5">{dayLabel(e.date)}{e.category && e.description ? ` · ${e.category}` : ''}</p>
               </div>
               <div className="flex items-center gap-1 shrink-0">
-                <span className="tnum text-sm font-semibold text-rose-600">- {formatBRL(e.amount)}</span>
+                <span className="tnum text-sm font-semibold text-expense">- {formatBRL(e.amount)}</span>
                 <ConfirmDelete
                   title="Excluir este gasto?"
                   description={`${e.description || e.category || 'Gasto'} · ${formatBRL(e.amount)} · ${dayLabel(e.date)}`}
                   onConfirm={() => onDelete(e.id)}
                 >
-                  <button className="p-1.5 -mr-1 text-muted-foreground hover:text-rose-500" aria-label="Excluir gasto">
+                  <button className="p-1.5 -mr-1 text-muted-foreground hover:text-expense" aria-label="Excluir gasto">
                     <X className="w-4 h-4" />
                   </button>
                 </ConfirmDelete>
@@ -400,7 +400,7 @@ function MobileHome(props) {
       <button
         onClick={onNew}
         style={{ bottom: 'max(1.25rem, env(safe-area-inset-bottom))' }}
-        className="fixed left-1/2 -translate-x-1/2 inline-flex items-center gap-2 h-14 pl-5 pr-6 rounded-full bg-[#059669] text-white shadow-lg shadow-[#059669]/30 active:scale-95 transition-transform"
+        className="fixed left-1/2 -translate-x-1/2 inline-flex items-center gap-2 h-14 pl-5 pr-6 rounded-full bg-brand text-on-brand shadow-lg shadow-brand/30 active:scale-95 transition-transform"
       >
         <Plus className="w-5 h-5" />
         <span className="font-display font-semibold">Lançamentos</span>

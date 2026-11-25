@@ -47,13 +47,13 @@ export default function TransactionStream({ dailyExpenses, selectedDate, onClear
                     {e.category && e.description && <p className="text-xs text-muted-foreground mt-0.5">{e.category}</p>}
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
-                    <span className="tnum text-sm font-semibold text-rose-600">- {formatBRL(e.amount)}</span>
+                    <span className="tnum text-sm font-semibold text-expense">- {formatBRL(e.amount)}</span>
                     <ConfirmDelete
                       title="Excluir este gasto?"
                       description={`${e.description || e.category || 'Gasto'} · ${formatBRL(e.amount)} · ${dayLabel(e.date)}`}
                       onConfirm={() => onDelete(e.id)}
                     >
-                      <button className="p-1 text-muted-foreground/60 hover:text-rose-500 transition-colors" aria-label="Excluir gasto">
+                      <button className="p-1 text-muted-foreground/60 hover:text-expense transition-colors" aria-label="Excluir gasto">
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </ConfirmDelete>

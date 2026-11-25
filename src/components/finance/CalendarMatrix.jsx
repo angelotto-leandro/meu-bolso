@@ -51,9 +51,9 @@ export default function CalendarMatrix({ days, dailyExpenses, selectedDate, onSe
               className={cn(
                 'aspect-square rounded-lg flex flex-col items-center justify-center gap-1 transition-colors',
                 isSelected
-                  ? 'bg-[#059669] text-white shadow-sm'
+                  ? 'bg-brand text-on-brand shadow-sm'
                   : isToday
-                    ? 'bg-[#ECFDF5] text-[#059669] ring-1 ring-[#059669]/30'
+                    ? 'bg-brand-soft text-brand ring-1 ring-brand/30'
                     : 'hover:bg-secondary text-foreground'
               )}
             >
@@ -62,7 +62,7 @@ export default function CalendarMatrix({ days, dailyExpenses, selectedDate, onSe
                 {showMonth && <span className="ml-0.5 text-[10px] opacity-60">/{MONTHS[d.getMonth()]}</span>}
               </span>
               {level > 0 && (
-                <span className={cn('rounded-full', isSelected ? 'bg-white' : 'bg-[#059669]', dotSize[level], !isSelected && dotOpacity[level])} />
+                <span className={cn('rounded-full', isSelected ? 'bg-on-brand' : 'bg-brand', dotSize[level], !isSelected && dotOpacity[level])} />
               )}
             </button>
           );

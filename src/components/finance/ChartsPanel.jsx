@@ -3,9 +3,11 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { formatBRL } from '@/lib/format';
 import { sourceMeta } from '@/components/finance/IncomeManager';
 import { cn } from '@/lib/utils';
+import { useTheme } from '@/lib/theme';
 
-const EXPENSE_COLORS = ['#059669', '#3B82F6', '#8B5CF6', '#F59E0B', '#06B6D4', '#EC4899', '#84CC16', '#F97316', '#64748B'];
-const INCOME_COLORS = ['#059669', '#06B6D4', '#8B5CF6', '#F59E0B', '#64748B'];
+const BRAND = { light: '#00A870', dark: '#00D68F' };
+const EXPENSE_REST = [ '#3B82F6', '#8B5CF6', '#F59E0B', '#06B6D4', '#EC4899', '#84CC16', '#F97316', '#64748B'];
+const INCOME_REST = ['#06B6D4', '#8B5CF6', '#F59E0B', '#64748B'];
 
 function BreakdownChart({ title, data, colors, emptyMessage, totalClass }) {
   const grandTotal = data.reduce((s, t) => s + t.total, 0);
@@ -27,7 +29,7 @@ function BreakdownChart({ title, data, colors, emptyMessage, totalClass }) {
                     <Cell key={t.name} fill={colors[i % colors.length]} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(v) => formatBRL(v)} contentStyle={{ borderRadius: 12, border: '1px solid hsl(var(--border))', fontSize: 12 }} />
+                <Tooltip formatter={(v) => formatBRL(v)} contentStyle={{ borderRadius: 12, border: '1px solid hsl(var(--border))', fontSize: 12, background: 'hsl(var(--card))', color: 'hsl(var(--foreground))' }} itemStyle={{ color: 'hsl(var(--foreground))' }} />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -61,6 +63,9 @@ function BreakdownChart({ title, data, colors, emptyMessage, totalClass }) {
 }
 
 export default function ChartsPanel({ dailyExpenses, fixedExpenses, incomes, periodLabel }) {
+  const { resolved } = useTheme();
+  const EXPENSE_COLORS = [BRAND[resolved], ...EXPENSE_REST];
+  const INCOME_COLORS = [BRAND[resolved], ...INCOME_REST];
   const month = periodLabel;
 
   const expenseTotals = useMemo(() => {
@@ -87,9 +92,9 @@ export default function ChartsPanel({ dailyExpenses, fixedExpenses, incomes, per
 
   return (
     <div className="space-y-6">
-      <BreakdownChart title="Gastos" data={expenseTotals} colors={EXPENSE_COLORS} emptyMessage={`Nenhum gasto em ${month}.`} totalClass="text-rose-600" />
+      <BreakdownChart title="Gastos" data={expenseTotals} colors={EXPENSE_COLORS} emptyMessage={`Nenhum gasto em ${month}.`} totalClass="text-expense" />
       <div className="border-t border-border" />
-      <BreakdownChart title="Ganhos" data={incomeTotals} colors={INCOME_COLORS} emptyMessage={`Nenhum ganho em ${month}.`} totalClass="text-[#059669]" />
+      <BreakdownChart title="Ganhos" data={incomeTotals} colors={INCOME_COLORS} emptyMessage={`Nenhum ganho em ${month}.`} totalClass="text-brand" />
     </div>
   );
 }

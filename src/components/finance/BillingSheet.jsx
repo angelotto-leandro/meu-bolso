@@ -71,7 +71,7 @@ export default function BillingSheet({ open, onOpenChange, billing }) {
                 role="switch"
                 aria-checked={enabled}
                 onClick={() => setEnabled((v) => !v)}
-                className={cn('relative w-11 h-6 rounded-full transition-colors shrink-0', enabled ? 'bg-[#059669]' : 'bg-secondary border border-border')}
+                className={cn('relative w-11 h-6 rounded-full transition-colors shrink-0', enabled ? 'bg-brand' : 'bg-secondary border border-border')}
               >
                 <span className={cn('absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform', enabled && 'translate-x-5')} />
               </button>
@@ -98,7 +98,7 @@ export default function BillingSheet({ open, onOpenChange, billing }) {
             )}
 
             {error && <p className="text-xs text-destructive">{error}</p>}
-            <Button onClick={save} disabled={busy || !dirty} className="w-full bg-[#059669] hover:bg-[#047857]">
+            <Button onClick={save} disabled={busy || !dirty} className="w-full bg-brand hover:bg-brand-strong">
               {busy ? <Loader2 className="animate-spin" /> : saved ? <><Check /> Salvo</> : 'Salvar'}
             </Button>
           </div>
@@ -124,12 +124,12 @@ export default function BillingSheet({ open, onOpenChange, billing }) {
                       <span className="min-w-0">
                         <span className="block text-sm font-medium text-foreground">
                           {p.label}
-                          {p.status === 'aberta' && <span className="ml-1.5 text-[10px] font-semibold text-[#059669] uppercase">aberta</span>}
+                          {p.status === 'aberta' && <span className="ml-1.5 text-[10px] font-semibold text-brand uppercase">aberta</span>}
                         </span>
                         <span className="block text-[11px] text-muted-foreground tnum">{p.range}</span>
                       </span>
                       <span className="flex items-center gap-1.5 shrink-0 text-xs text-muted-foreground">
-                        <span className={cn('tnum', p.isOverride && 'text-[#059669] font-semibold')}>
+                        <span className={cn('tnum', p.isOverride && 'text-brand font-semibold')}>
                           {p.status === 'futura' ? `fecha ${p.closeLabel}` : p.status === 'aberta' ? `fecha ${p.closeLabel}` : `fechou ${p.closeLabel}`}
                         </span>
                         {p.status !== 'futura' && <Pencil className="w-3 h-3" />}

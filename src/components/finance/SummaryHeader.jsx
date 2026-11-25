@@ -16,7 +16,7 @@ export default function SummaryHeader({ period, onCloseInvoice, onOpenMenu, onOp
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-2.5">
-          <button onClick={onOpenMenu} aria-label="Abrir menu" className="w-10 h-10 rounded-xl bg-[#059669] text-white grid place-items-center font-display font-bold text-lg shadow-sm hover:bg-[#047857] transition-colors">B</button>
+          <button onClick={onOpenMenu} aria-label="Abrir menu" className="w-10 h-10 rounded-xl bg-brand text-on-brand grid place-items-center font-display font-bold text-lg shadow-sm hover:bg-brand-strong transition-colors">B</button>
           <div>
             <p className="label-eyebrow text-muted-foreground">Meu Bolso</p>
             <h1 className="font-display font-bold text-lg text-foreground leading-tight">Controle de Gastos</h1>
@@ -39,19 +39,19 @@ export default function SummaryHeader({ period, onCloseInvoice, onOpenMenu, onOp
               onClick={c.statement ? () => onOpenStatement(c.statement) : undefined}
               className={cn(
                 'rounded-xl border bg-card p-4 transition-colors',
-                c.statement && 'cursor-pointer hover:border-[#059669]/40 hover:shadow-sm',
+                c.statement && 'cursor-pointer hover:border-brand/40 hover:shadow-sm',
                 c.highlight
                   ? positive
-                    ? 'border-[#059669]/30 bg-[#ECFDF5]'
-                    : 'border-rose-200 bg-rose-50'
+                    ? 'border-brand/30 bg-brand-soft'
+                    : 'border-expense-border bg-expense-soft'
                   : 'border-border'
               )}
             >
               <div className="flex items-center justify-between mb-2">
                 <span className="label-eyebrow text-muted-foreground">{c.label}</span>
-                <c.icon className={cn('w-3.5 h-3.5', positive ? 'text-[#059669]' : negative ? 'text-rose-500' : 'text-muted-foreground')} />
+                <c.icon className={cn('w-3.5 h-3.5', positive ? 'text-brand' : negative ? 'text-expense' : 'text-muted-foreground')} />
               </div>
-              <p className={cn('font-display font-bold tnum tracking-tight text-xl lg:text-2xl', c.highlight ? (positive ? 'text-[#059669]' : 'text-rose-600') : 'text-foreground')}>
+              <p className={cn('font-display font-bold tnum tracking-tight text-xl lg:text-2xl', c.highlight ? (positive ? 'text-brand' : 'text-expense') : 'text-foreground')}>
                 {formatBRL(c.value)}
               </p>
             </div>

@@ -69,7 +69,7 @@ export default function DailyExpenseForm({ onSaved, defaultDate, customCategorie
         <Label className="label-eyebrow text-muted-foreground mb-1.5 block">Categoria</Label>
         <div className="flex flex-wrap gap-1.5">
           {allCategories.map((c) => (
-            <button type="button" key={c} onClick={() => setCategory(c)} className={cn('px-2.5 py-1 rounded-full text-xs border transition-colors', category === c ? 'bg-[#059669] text-white border-[#059669]' : 'border-border text-muted-foreground hover:border-[#059669]/40 hover:text-foreground')}>
+            <button type="button" key={c} onClick={() => setCategory(c)} className={cn('px-2.5 py-1 rounded-full text-xs border transition-colors', category === c ? 'bg-brand text-on-brand border-brand' : 'border-border text-muted-foreground hover:border-brand/40 hover:text-foreground')}>
               {c}
             </button>
           ))}
@@ -92,7 +92,7 @@ export default function DailyExpenseForm({ onSaved, defaultDate, customCategorie
         </div>
       </div>
       {error && <p className="text-sm text-destructive">{error}</p>}
-      <Button type="submit" disabled={saving || !valid} className="w-full h-12 bg-[#059669] hover:bg-[#047857] text-white">
+      <Button type="submit" disabled={saving || !valid} className="w-full h-12 bg-brand hover:bg-brand-strong text-on-brand">
         {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : justSaved ? <><Check className="w-4 h-4" /> Lançado!</> : 'Lançar gasto'}
       </Button>
     </form>

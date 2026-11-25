@@ -18,6 +18,18 @@ export default {
         muted: { DEFAULT: 'hsl(var(--muted))', foreground: 'hsl(var(--muted-foreground))' },
         accent: { DEFAULT: 'hsl(var(--accent))', foreground: 'hsl(var(--accent-foreground))' },
         destructive: { DEFAULT: 'hsl(var(--destructive))', foreground: 'hsl(var(--destructive-foreground))' },
+        brand: {
+          DEFAULT: 'rgb(var(--brand) / <alpha-value>)',
+          strong: 'rgb(var(--brand-strong) / <alpha-value>)',
+          soft: 'rgb(var(--brand-soft) / <alpha-value>)',
+        },
+        'on-brand': 'rgb(var(--on-brand) / <alpha-value>)',
+        expense: {
+          DEFAULT: 'rgb(var(--expense) / <alpha-value>)',
+          soft: 'rgb(var(--expense-soft) / <alpha-value>)',
+          border: 'rgb(var(--expense-border) / <alpha-value>)',
+        },
+        warning: 'rgb(var(--warning) / <alpha-value>)',
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',

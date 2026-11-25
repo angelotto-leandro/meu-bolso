@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from '@/App';
 import { isConfigured } from '@/lib/supabase';
+import { ThemeProvider } from '@/lib/theme';
 import '@/index.css';
 
 function NotConfigured() {
@@ -18,5 +19,7 @@ function NotConfigured() {
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>{isConfigured ? <App /> : <NotConfigured />}</React.StrictMode>
+  <React.StrictMode>
+    <ThemeProvider>{isConfigured ? <App /> : <NotConfigured />}</ThemeProvider>
+  </React.StrictMode>
 );
